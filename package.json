@@ -1,0 +1,8 @@
+{
+    "name": "browser-harness",
+    "version": "0.0.1",
+    "dependencies": {
+        "now": "0.8.1",
+        "express": "3.3.4"
+    }
+}
