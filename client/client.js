@@ -37,6 +37,12 @@ now.exec = function(args, callback){
         callback && callback(convertReturnValue(arg1), convertReturnValue(arg2), convertReturnValue(arg3), convertReturnValue(arg4));
     };
 
+    if(testFrame.contentWindow.$ == null){
+        //JQuery is not loaded in test frame. Inject the harness's copy into it
+        var html = testFrame.contentWindow.document.getElementsByTagName('html')[0];
+        testFrame.contentWindow.$ = function(selector){ return $(selector, html); };
+    }
+
     if(hasCallback){
         if(args.args){
             func(convertArgument(args.args), convertCallback);
