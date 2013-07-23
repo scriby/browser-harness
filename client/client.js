@@ -33,25 +33,28 @@ now.exec = function(args, callback){
         func = new testFrame.contentWindow.Function(funcArgs[0], funcArgs[1], funcText);
     }
 
-    var convertCallback = function(arg1, arg2, arg3, arg4){
-        callback && callback(convertReturnValue(arg1), convertReturnValue(arg2), convertReturnValue(arg3), convertReturnValue(arg4));
-    };
-
     if(testFrame.contentWindow.$ == null){
         //JQuery is not loaded in test frame. Inject the harness's copy into it
         var html = testFrame.contentWindow.document.getElementsByTagName('html')[0];
         testFrame.contentWindow.$ = function(selector){ return $(selector, html); };
     }
 
+    if(testFrame.contentWindow.Element.prototype.toJSON == null){
+        //Inject JSON serialization for DOM elements
+        testFrame.contentWindow.Element.prototype.toJSON = function(){
+            return convertFromDomElement(this);
+        };
+    }
+
     if(hasCallback){
         if(args.args){
             func(convertArgument(args.args), convertCallback);
         } else {
-            func(convertCallback);
+            func(callback);
         }
     } else {
         var result = func(convertArgument(args.args));
-        convertCallback(null, result);
+        callback(null, result);
     }
 };
 

@@ -1,2 +1,2 @@
-exports.findElementTimeoutMS = 2000;
-exports.findElementRetryMS = 100;
+exports.timeoutMS = 2000;
+exports.retryMS = 100;

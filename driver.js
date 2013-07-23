@@ -19,6 +19,12 @@ Driver.prototype._convertElementProxy = function(obj){
 Driver.prototype._convertArguments = function(args){
     for(var i = 0; i < args.length; i++){
         var item = args[i];
+
+        if(item && item.context && item.length){
+            //A jQuery object was returned - convert it to just the raw object
+            item = item[0];
+        }
+
         if(item && item.isElementProxy){
             args[i] = this._convertElementProxy(item);
         }
@@ -114,7 +120,7 @@ Driver.prototype.findElement = function(args, callback){
         var flow = asyncblock.getCurrentFlow();
 
         if(flow){
-            return flow.sync( this.findElement(selector, flow.add()) );
+            return flow.sync( this.findElement(args, flow.add()) );
         }
     }
 
@@ -132,14 +138,62 @@ Driver.prototype.findElement = function(args, callback){
         if(element) {
            callback(null, element);
         } else {
-            if(new Date() - startTime < config.findElementTimeoutMS){
+            if(new Date() - startTime < config.timeoutMS){
                 setTimeout(function(){
                    self.findElement({ selector: selector, startTime: startTime }, callback);
-                }, config.findElementRetryMS);
+                }, config.retryMS);
             } else {
                 return callback(new Error('Element "' + selector + '" not found'));
             }
         }
+    });
+};
+
+var _isVisibleAndEnabled = function(element, selector, startTime, callback){
+    //Select not-disabled elements instead of enabled elements because only certain types of elements can be enabled
+    //For instance, anchor tags cannot be enabled - so they will always fail an enabled check
+    element.is(':visible:not(:disabled)', function(err, isVisible){
+        if(err) {
+            return callback(err);
+        }
+
+        if(isVisible){
+            callback(null, element);
+        } else {
+            if(new Date() - startTime < config.timeoutMS){
+                setTimeout(function(){
+                   _isVisibleAndEnabled(element, selector, startTime, callback);
+                }, config.retryMS);
+            } else {
+                return callback(new Error('Element "' + selector + '" was found, but is not visible and enabled.'));
+            }
+        }
+    });
+};
+
+Driver.prototype.findReady = function(args, callback){
+    var selector;
+    if(typeof args === 'object'){
+        selector = args.selector;
+    } else {
+        selector = args;
+    }
+
+    //Use asyncblock fibers if it is available
+    if(asyncblock && callback == null){
+        var flow = asyncblock.getCurrentFlow();
+
+        if(flow){
+            return flow.sync( this.findReady(args, flow.add()) );
+        }
+    }
+
+    this.findElement(args, function(err, element){
+        if(err){
+            return callback(err);
+        }
+
+        _isVisibleAndEnabled(element, selector, new Date(), callback);
     });
 };
 
