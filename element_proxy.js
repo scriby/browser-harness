@@ -1,5 +1,4 @@
-var ElementProxy = function(element, driver){
-    this.element = element;
+var ElementProxy = function(driver){
     this.driver = driver;
 };
 
@@ -15,9 +14,10 @@ ElementProxy.prototype._exec = function(args, callback){
     return this.driver.exec({
         func: function(args){
             var result;
-            var element = $(args.element);
 
-            result = element[args.func].apply(element, args.funcArgs);
+            var elements = $(args.elements);
+
+            result = elements[args.func].apply(elements, args.funcArgs);
 
             return result;
         },
@@ -25,7 +25,7 @@ ElementProxy.prototype._exec = function(args, callback){
         args: {
             func: args.func,
             funcArgs: funcArgs,
-            element: this.element
+            elements: this //this.driver does not show up in the serialized version of this (probably b/c it's an array)
         }
     }, callback);
 };
@@ -42,6 +42,9 @@ ElementProxy.prototype.blur = function(callback){
     return this._exec({ func: 'blur', args: arguments });
 };
 
+ElementProxy.prototype.innerHTML = function(callback){
+    return this._exec({ func: 'innerHTML', args: arguments });
+};
 
 ElementProxy.prototype.val = function(value, callback){
     return this._exec({ func: 'val', args: arguments });
@@ -167,7 +170,13 @@ ElementProxy.prototype.contents = function(callback){
     return this._exec({ func: 'contents', args: arguments });
 };
 
-//TODO: find
+ElementProxy.prototype.find = function(selector, callback){
+    return this.driver.find({ selector: selector, context: this }, callback);
+};
+
+ElementProxy.prototype.findVisible = function(selector, callback){
+    return this.driver.findVisible({ selector: selector, context: this }, callback);
+};
 
 ElementProxy.prototype.first = function(callback){
     return this._exec({ func: 'first', args: arguments });

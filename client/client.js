@@ -1,6 +1,6 @@
 var testFrame = document.getElementById('testFrame');
 
-now.exec = function(args, callback){
+now.exec = function(args, callback){ console.log(args);
     var hasCallback = false;
     var match = /^function\s*\(([^\)]*)\)/.exec(args.func);
     var funcArgs;
@@ -36,7 +36,13 @@ now.exec = function(args, callback){
     if(testFrame.contentWindow.$ == null){
         //JQuery is not loaded in test frame. Inject the harness's copy into it
         var html = testFrame.contentWindow.document.getElementsByTagName('html')[0];
-        testFrame.contentWindow.$ = function(selector){ return $(selector, html); };
+        testFrame.contentWindow.$ = function(selector, context){ return $(selector, context || html); };
+    }
+
+    if(testFrame.contentWindow.$.prototype.toJSON == null){
+        testFrame.contentWindow.$.prototype.toJSON = function(){
+            return Array.prototype.slice.call(this, 0); //Convert to array. Need to remove extra jQuery properties as they don't always serialize well
+        };
     }
 
     if(testFrame.contentWindow.Element.prototype.toJSON == null){
@@ -48,7 +54,7 @@ now.exec = function(args, callback){
 
     if(hasCallback){
         if(args.args){
-            func(convertArgument(args.args), convertCallback);
+            func(convertArgument(args.args), callback);
         } else {
             func(callback);
         }
@@ -114,11 +120,18 @@ var convertReturnValue = function(result){
 var convertArgument = function(arg){
     if(isElementProxy(arg)){
         return convertFromElementProxy(arg);
+    } else if(Array.isArray(arg)){
+        //Special case arrays for faster looping
+        for(var i = 0; i < arg.length; i++){
+            if(isElementProxy(arg[i])){
+                arg[i] = convertFromElementProxy(arg[i]);
+            }
+        }
+
+        return arg;
     } else if(typeof arg === 'object'){
         for(var key in arg){
-            if(isElementProxy(arg[key])){
-                arg[key] = convertFromElementProxy(arg[key]);
-            }
+            arg[key] = convertArgument(arg[key]);
         }
 
         return arg;
