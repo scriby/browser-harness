@@ -1,4 +1,3 @@
-var fs = require('fs');
 var events = require('events');
 var express = require('express');
 
@@ -11,7 +10,7 @@ var everyone = nowjs.initialize(server);
 
 var tests = [];
 
-app.use(express.static(__dirname + '/client'));
+app.use(express.static(__dirname + '/../client'));
 
 exports.events = new events.EventEmitter();
 
