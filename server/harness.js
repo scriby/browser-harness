@@ -13,6 +13,7 @@ var tests = [];
 app.use(express.static(__dirname + '/../client'));
 
 exports.events = new events.EventEmitter();
+exports.Browser = require('./browser.js');
 
 exports.init = function(){
     server.listen(4500);

@@ -16,21 +16,12 @@ Driver.prototype._convertArguments = function(args){
     for(var i = 0; i < args.length; i++){
         var item = args[i];
 
-        if(item && item.length){
-            //jQuery variables don't come across as arrays - convert it
-            var array = [];
-            for(var j = 0; j < item.length; j++){
-                if(item[j].isElementProxy){
-                    array.push(item[j]);
-                }
-            }
+        if(item && item.isElementArray){
+            var elements = item.elements || [];
+            elements.__proto__ = ElementProxy.prototype;
+            elements.driver = this;
 
-            if(array.length > 0){
-                array.__proto__ = ElementProxy.prototype;
-                array.driver = this;
-
-                args[i] = array;
-            }
+            args[i] = elements;
         } else if(item && item.isElementProxy){
             var array = [ item ];
             array.__proto__ = ElementProxy.prototype;
@@ -130,18 +121,18 @@ Driver.prototype.waitFor = function(args, callback){
     });
 };
 
-Driver.prototype.findElement = Driver.prototype.find = function(args, callback){
+Driver.prototype.findElement = function(args, callback){
     var self = this;
-    var startTime;
-    var selector;
-    var context;
+    var startTime, selector, context, multi;
     if(typeof args === 'object'){
         selector = args.selector;
-        startTime = args.startTime;
+        startTime = args.startTime || new Date();
         context = args.context;
+        multi = args.multi;
     } else {
         selector = args;
         startTime = new Date();
+        multi = false;
     }
 
     //Use asyncblock fibers if it is available
@@ -164,18 +155,32 @@ Driver.prototype.findElement = Driver.prototype.find = function(args, callback){
             return callback(err);
         }
 
-        if(element) {
+        if(element && (element.length === 1 || (multi && element.length > 0))) {
            callback(null, element);
         } else {
             if(new Date() - startTime < config.timeoutMS){
                 setTimeout(function(){
-                   self.findElement({ selector: selector, context: context, startTime: startTime }, callback);
+                   self.findElement({ selector: selector, context: context, startTime: startTime, multi: multi }, callback);
                 }, config.retryMS);
             } else {
-                return callback(new Error('Element "' + selector + '" not found'));
+                if(element && element.length > 1){
+                    return callback(new Error('Element "' + selector + '" found, but there were too many instances (' + element.length + ')'));
+                } else {
+                    return callback(new Error('Element "' + selector + '" not found'));
+                }
             }
         }
     });
+};
+
+Driver.prototype.findElements = Driver.prototype.find = function(args, callback){
+    if(typeof args === 'object'){
+        args.multi = true;
+    } else {
+        args = { selector: args, multi: true };
+    }
+
+    return this.findElement(args, callback);
 };
 
 var _isVisible = function(element, selector, startTime, callback){
@@ -205,7 +210,7 @@ Driver.prototype.findVisible = function(args, callback){
     if(typeof args === 'object'){
         selector = args.selector;
     } else {
-        selector = args;
+        args = { selector: args, multi: false };
     }
 
     //Use asyncblock fibers if it is available
@@ -224,6 +229,16 @@ Driver.prototype.findVisible = function(args, callback){
 
         _isVisible(element, selector, new Date(), callback);
     });
+};
+
+Driver.prototype.findVisibles = function(args, callback){
+    if(typeof args === 'object'){
+        args.multi = true;
+    } else {
+        args = { selector: args, multi: true };
+    }
+
+    return this.findVisible(args, callback);
 };
 
 module.exports = Driver;

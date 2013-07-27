@@ -170,12 +170,20 @@ ElementProxy.prototype.contents = function(callback){
     return this._exec({ func: 'contents', args: arguments });
 };
 
-ElementProxy.prototype.find = function(selector, callback){
+ElementProxy.prototype.find = ElementProxy.prototype.findElements = function(selector, callback){
     return this.driver.find({ selector: selector, context: this }, callback);
+};
+
+ElementProxy.prototype.findElement = function(selector, callback){
+    return this.driver.findElement({ selector: selector, context: this }, callback);
 };
 
 ElementProxy.prototype.findVisible = function(selector, callback){
     return this.driver.findVisible({ selector: selector, context: this }, callback);
+};
+
+ElementProxy.prototype.findVisibles = function(selector, callback){
+    return this.driver.findVisibles({ selector: selector, context: this }, callback);
 };
 
 ElementProxy.prototype.first = function(callback){

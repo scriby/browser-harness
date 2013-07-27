@@ -1,6 +1,13 @@
 var testFrame = document.getElementById('testFrame');
 
-now.exec = function(args, callback){ console.log(args);
+$.prototype.toJSON = function(){
+    return {
+        isElementArray: true,
+        elements: Array.prototype.slice.call(this, 0) //Convert to array. Need to remove extra jQuery properties as they don't always serialize well
+    };
+};
+
+now.exec = function(args, callback){
     var hasCallback = false;
     var match = /^function\s*\(([^\)]*)\)/.exec(args.func);
     var funcArgs;
@@ -40,9 +47,7 @@ now.exec = function(args, callback){ console.log(args);
     }
 
     if(testFrame.contentWindow.$.prototype.toJSON == null){
-        testFrame.contentWindow.$.prototype.toJSON = function(){
-            return Array.prototype.slice.call(this, 0); //Convert to array. Need to remove extra jQuery properties as they don't always serialize well
-        };
+        testFrame.contentWindow.$.prototype.toJSON = $.prototype.toJSON;
     }
 
     if(testFrame.contentWindow.Element.prototype.toJSON == null){
