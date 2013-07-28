@@ -17,6 +17,12 @@ ElementProxy.prototype._exec = function(args, callback){
 
             var elements = $(args.elements);
 
+            if(args.notDisabled){
+                if(!elements.is(':not(:disabled)')){
+                    throw new Error('Element(s) are disabled. ' + args.func + ' failed.');
+                }
+            }
+
             result = elements[args.func].apply(elements, args.funcArgs);
 
             return result;
@@ -25,13 +31,14 @@ ElementProxy.prototype._exec = function(args, callback){
         args: {
             func: args.func,
             funcArgs: funcArgs,
+            notDisabled: args.notDisabled,
             elements: this //this.driver does not show up in the serialized version of this (probably b/c it's an array)
         }
     }, callback);
 };
 
 ElementProxy.prototype.click = function(callback){
-    return this._exec({ func: 'click', args: arguments });
+    return this._exec({ func: 'click', args: arguments, notDisabled: true });
 };
 
 ElementProxy.prototype.focus = function(callback){

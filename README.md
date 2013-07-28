@@ -5,7 +5,7 @@ browser-harness
 
 
 * More streamlined browser integration (windows, linux)
-* Richer test operations
+* Handle alert, input, etc.
 * Ability to get / set cookies
 * Documentation
 * Tests

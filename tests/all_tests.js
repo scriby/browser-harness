@@ -7,7 +7,7 @@ var testBrowser = require('./test_browser.js');
 var harness = require('browser-harness');
 
 describe('', function(){
-    var args = {};
+    var args = { baseUrl: 'http://localhost:4501' };
 
     before(function(done){
         harness.listen(4500, function(){
@@ -22,8 +22,9 @@ describe('', function(){
     });
 
     require('./test/simple.js').setup(args);
+    require('./test/click.js').setup(args);
 
     after(function(){
-        testBrowser.close();
+        //testBrowser.close();
     });
 });
