@@ -22,16 +22,21 @@ exports.init = function(){
 everyone.now.setup = function(){
     var driver = new Driver(this.now);
 
-    this.now.sendLog = function(text){
+    this.now.sendConsoleLog = function(text){
         driver.events.emit('console.log', text);
     };
 
-    this.now.sendWarn = function(text){
+    this.now.sendConsoleWarn = function(text){
         driver.events.emit('console.warn', text);
     };
 
-    this.now.sendError = function(text){
+    this.now.sendConsoleError = function(text){
         driver.events.emit('console.error', text);
+    };
+
+    this.now.sendError = function(info){
+        //info: { message, jsFinle, line, url }
+        driver.events.emit('error', info);
     };
 
     exports.events.emit('ready', driver);

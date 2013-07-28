@@ -8,44 +8,76 @@
             var oldWarn = window.console.warn;
 
             window.console.log = function(text){
-                if(now.sendLog) {
-                    now.sendLog(text);
+                if(now.sendConsoleLog) {
+                    now.sendConsoleLog(text);
                 }
                 oldLog.call(window.console, text);
             };
 
             window.console.warn = function(text){
-                if(now.sendWarn){
-                    now.sendWarn(text);
+                if(now.sendConsoleWarn){
+                    now.sendConsoleWarn(text);
                 }
 
                 oldWarn.call(window.console, text);
             };
 
             window.console.error = function(text){
-                if(now.sendError){
-                    now.sendError(text);
+                if(now.sendConsoleError){
+                    now.sendConsoleError(text);
                 }
 
                 oldError.call(window.console, text);
             };
 
-            window.console.patched = true;
+            window.__harness_consolePatched__ = true;
         }
     };
 
-    //Need to keep trying in case the page updates
+    //Need to keep trying in case the page changes
     var patchTestFrameConsole = function(){
         var testFrameWindow = testFrame.contentWindow;
-        if(testFrameWindow && testFrameWindow.console && !testFrameWindow.console.patched) {
+        if(testFrameWindow && testFrameWindow.console && !testFrameWindow.__harness_consolePatched__) {
             patchConsole(testFrameWindow);
         }
 
         setTimeout(patchTestFrameConsole, 100);
     };
 
+    var patchErrorHandler = function(window){
+        var oldOnError = window.onerror;
+
+        window.onerror = function(message, jsFile, line){
+            now.sendError({
+                message: message,
+                jsFile: jsFile,
+                line: line,
+                url: window.location.href
+            });
+
+            if(oldOnError){
+                return oldOnError.apply(window, arguments);
+            }
+        };
+
+        window.__harness_onErrorPatched__ = true;
+    };
+
+    //Need to keep trying in case the page changes
+    var patchTestFrameErrorHandler = function(){
+        var testFrameWindow = testFrame.contentWindow;
+        if(testFrameWindow && (!testFrameWindow.onerror || !testFrameWindow.__harness_onErrorPatched__)) {
+            patchErrorHandler(testFrameWindow);
+        }
+
+        setTimeout(patchTestFrameErrorHandler, 100);
+    };
+
     patchConsole(window);
     patchTestFrameConsole();
+
+    patchErrorHandler(window);
+    patchTestFrameErrorHandler();
 
     $.prototype.toJSON = function(){
         return {
