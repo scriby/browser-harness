@@ -18,3 +18,12 @@ exports.beforeEach = function(func){
         });
     });
 };
+
+exports.afterEach = function(func){
+    afterEach(function(done){
+        asyncblock(function(){
+            func();
+            done();
+        });
+    });
+};

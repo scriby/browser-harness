@@ -14,6 +14,7 @@ app.use(express.static(__dirname + '/../client'));
 
 exports.events = new events.EventEmitter();
 exports.Browser = require('./browser.js');
+exports.config = require('./config.js');
 
 exports.listen = function(port, callback){
     server.listen(port || 4500, callback);

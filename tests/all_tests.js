@@ -6,6 +6,10 @@ require('./test_server.js');
 var testBrowser = require('./test_browser.js');
 var harness = require('browser-harness');
 
+//Lower timeout settings for tests so they go faster
+harness.config.timeoutMS = 10;
+harness.config.retryMS = 3;
+
 describe('', function(){
     var args = { baseUrl: 'http://localhost:4501' };
 
@@ -23,8 +27,9 @@ describe('', function(){
 
     require('./test/simple.js').setup(args);
     require('./test/click.js').setup(args);
+    require('./test/visible.js').setup(args);
 
     after(function(){
-        //testBrowser.close();
+        testBrowser.close();
     });
 });

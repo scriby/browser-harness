@@ -79,6 +79,24 @@
     patchErrorHandler(window);
     patchTestFrameErrorHandler();
 
+    var patchJQueryExtensions = function($){
+        if($ && $.fn && !$.fn._isVisible){
+            $.fn._isVisible = function(){
+                var $this = $(this);
+
+                return !$this.is(':hidden') &&
+                    $this.css('visibility') !== 'hidden' &&
+                    $this.parents().filter(function(){
+                        return $this.css('visibility') === 'hidden';
+                    }).length === 0;
+            };
+
+            $.fn._filterVisible = function(){
+                return this.filter($.fn._isVisible);
+            };
+        }
+    };
+
     $.prototype.toJSON = function(){
         return {
             isElementArray: true,
@@ -124,6 +142,9 @@
             var html = testFrame.contentWindow.document.getElementsByTagName('html')[0];
             testFrame.contentWindow.$ = function(selector, context){ return $(selector, context || html); };
         }
+
+        patchJQueryExtensions($);
+        patchJQueryExtensions(testFrame.contentWindow.$);
 
         if(testFrame.contentWindow.$.prototype.toJSON == null){
             testFrame.contentWindow.$.prototype.toJSON = $.prototype.toJSON;

@@ -5,8 +5,8 @@ exports.setup = function(args){
     describe('When viewing click.html', function(){
         var driver, message;
 
-        tu.beforeEach(function(){
-            message && message.html('');
+        tu.afterEach(function(){
+            message.html('');
         });
 
         tu.it('loads the URL', function(){

@@ -189,6 +189,14 @@ ElementProxy.prototype.findVisibles = function(selector, callback){
     return this.driver.findVisibles({ selector: selector, context: this }, callback);
 };
 
+ElementProxy.prototype.isActionable = function(callback){
+    return this._exec({ func: 'isActionable', args: arguments });
+};
+
+ElementProxy.prototype._filterVisible = function(callback){
+    return this._exec({ func: '_filterVisible', args: arguments });
+};
+
 ElementProxy.prototype.first = function(callback){
     return this._exec({ func: 'first', args: arguments });
 };
@@ -259,6 +267,8 @@ ElementProxy.prototype.removeData = function(name, callback){
 };
 
 
-
+ElementProxy.prototype.filter = function(selector, callback){
+    return this._exec({ func: 'filter', args: arguments });
+};
 
 module.exports = ElementProxy;
