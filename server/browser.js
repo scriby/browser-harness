@@ -27,7 +27,7 @@ var _defaultConfig = {
 
         phantomjs: {
             location: 'phantomjs',
-            args: [ '*URL*' ]
+            args: [ __dirname + '/phantom-bootstrap.js', '*URL*' ]
         }
     }
 };
@@ -58,6 +58,14 @@ Browser.prototype.open = function(harnessUrl, serverUrl){
     });
 
     this.proc = child_process.spawn(location, browserArgs);
+
+    this.proc.stdout.on('data', function (data) {
+        console.log('browser: ' + data);
+    });
+
+    this.proc.stderr.on('data', function (data) {
+        console.error('browser: ' + data);
+    });
 };
 
 Browser.prototype.close = function(){
