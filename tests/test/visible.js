@@ -30,15 +30,40 @@ exports.setup = function(args){
 
         tu.it('.test-button-1 can be found', function(){
             var testButton = driver.findElement('.test-button-1');
+
             assert(testButton);
+            assert(testButton.length, 1);
+        });
+
+        tu.it('.test-button-1 can be found using body.findVisible', function(){
+            var testButton = driver.findElement('body').findVisible('.test-button:first');
+            assert(testButton);
+            assert(testButton.length, 1);
+        });
+
+        tu.it('.test-button-1 can be found using body.findVisibles', function(){
+            var testButton = driver.findElement('body').findVisibles('.test-button');
+            assert(testButton);
+            assert(testButton.length, 1);
         });
 
         tu.it('.test-button-1 cannot be selected with findVisible', function(){
-
+            ensureHidden('.test-button-1');
         });
 
         tu.it('.test-button-1 cannot be selected with findVisibles', function(){
-            ensureHidden('.test-button-1');
+            var control;
+            var selector = '.test-button-1';
+
+            try{
+                control = driver.findVisibles(selector);
+            } catch(e){
+                exceptionOccurred = true;
+                assert.equal(e.message, 'Element "' + selector + '" was found, but is not visible.');
+            }
+
+            assert(exceptionOccurred);
+            assert(!control);
         });
 
         tu.it('.test-button returns one element when selected with findVisibles', function(){

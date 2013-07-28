@@ -26,6 +26,7 @@ describe('', function(){
     });
 
     require('./test/simple.js').setup(args);
+    require('./test/find.js').setup(args);
     require('./test/click.js').setup(args);
     require('./test/visible.js').setup(args);
 
