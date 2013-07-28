@@ -143,8 +143,12 @@
                 func(callback);
             }
         } else {
-            var result = func(convertArgument(args.args));
-            callback(null, result);
+            try{
+                var result = func(convertArgument(args.args));
+                callback(null, result);
+            } catch(e){
+                callback((e && e.stack) || (e && e.message) || e || 'A javascript error occurred in the browser');
+            }
         }
     };
 

@@ -29,6 +29,20 @@ var _defaultConfig = {
             location: 'phantomjs',
             args: [ __dirname + '/phantom-bootstrap.js', '*URL*' ]
         }
+    },
+
+    linux: {
+        phantomjs: {
+            location: 'phantomjs',
+            args: [ __dirname + '/phantom-bootstrap.js', '*URL*' ]
+        }
+    },
+
+    win32: {
+        phantomjs: {
+            location: 'phantomjs',
+            args: [ __dirname + '/phantom-bootstrap.js', '*URL*' ]
+        }
     }
 };
 

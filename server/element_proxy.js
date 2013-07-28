@@ -42,10 +42,6 @@ ElementProxy.prototype.blur = function(callback){
     return this._exec({ func: 'blur', args: arguments });
 };
 
-ElementProxy.prototype.innerHTML = function(callback){
-    return this._exec({ func: 'innerHTML', args: arguments });
-};
-
 ElementProxy.prototype.val = function(value, callback){
     return this._exec({ func: 'val', args: arguments });
 };

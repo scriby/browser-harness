@@ -61,10 +61,10 @@ Driver.prototype.exec = function(args, callback){
             args: funcArgs
         },
 
-        function(){
+        function(err){
             self._convertArguments(arguments);
 
-            callback && callback.apply(null, arguments)
+            callback && callback.apply(err, arguments)
         }
     );
 };

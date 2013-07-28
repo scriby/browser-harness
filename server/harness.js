@@ -15,8 +15,8 @@ app.use(express.static(__dirname + '/../client'));
 exports.events = new events.EventEmitter();
 exports.Browser = require('./browser.js');
 
-exports.init = function(){
-    server.listen(4500);
+exports.listen = function(port, callback){
+    server.listen(port || 4500, callback);
 };
 
 everyone.now.setup = function(){
@@ -36,7 +36,7 @@ everyone.now.setup = function(){
 
     this.now.sendError = function(info){
         //info: { message, jsFinle, line, url }
-        driver.events.emit('error', info);
+        driver.events.emit('window.onerror', info);
     };
 
     exports.events.emit('ready', driver);
