@@ -1,3 +1,5 @@
+var events = require('events');
+
 var config = require('./config.js');
 
 var asyncblock;
@@ -10,6 +12,7 @@ var ElementProxy = require('./element_proxy.js');
 
 var Driver = function(now){
     this.now = now;
+    this.events = new events.EventEmitter();
 };
 
 Driver.prototype._convertArguments = function(args){

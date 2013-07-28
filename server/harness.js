@@ -20,8 +20,19 @@ exports.init = function(){
 };
 
 everyone.now.setup = function(){
-    var self = this;
-    console.log('ready');
-    exports.events.emit('ready', new Driver(self.now));
-};
+    var driver = new Driver(this.now);
 
+    this.now.sendLog = function(text){
+        driver.events.emit('console.log', text);
+    };
+
+    this.now.sendWarn = function(text){
+        driver.events.emit('console.warn', text);
+    };
+
+    this.now.sendError = function(text){
+        driver.events.emit('console.error', text);
+    };
+
+    exports.events.emit('ready', driver);
+};
