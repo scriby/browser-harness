@@ -3,10 +3,11 @@ var assert = require('assert');
 
 exports.setup = function(args){
     describe('When viewing click.html', function(){
-        var driver, message;
+        var driver, message, exceptionOccurred;
 
         tu.afterEach(function(){
             message.html('');
+            exceptionOccurred = false;
         });
 
         tu.it('loads the URL', function(){
@@ -25,14 +26,29 @@ exports.setup = function(args){
             assert.equal(message.html(), 'test-link clicked');
         });
 
-        tu.it('clicking a disabled button throws an exception and has no effect', function(){
-            var testButton = driver.findVisible('.test-button').attr('disabled', 'true');
+        tu.it('cannot click a disabled button', function(){
+            var testButton = driver.findVisible('.test-button-disabled');
             try{
                 testButton.click();
             } catch(e){
-                assert.equal(e.message.indexOf('Error: Element(s) are disabled. click failed.'), 0);
+                exceptionOccurred = true;
+                assert.equal(e.message.indexOf('Error: Element(s) are not actionable. click failed.'), 0);
             }
 
+            assert.equal(message.html(), '');
+            assert(exceptionOccurred);
+        });
+
+        tu.it('cannot click a hidden link', function(){
+            var testLink = driver.findElement('.test-link-hidden');
+            try{
+                testLink.click();
+            } catch(e){
+                exceptionOccurred = true;
+                assert.equal(e.message.indexOf('Error: Element(s) are not actionable. click failed.'), 0);
+            }
+
+            assert(exceptionOccurred);
             assert.equal(message.html(), '');
         });
     });
