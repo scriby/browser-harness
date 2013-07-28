@@ -29,6 +29,7 @@ describe('', function(){
     require('./test/find.js').setup(args);
     require('./test/click.js').setup(args);
     require('./test/visible.js').setup(args);
+    require('./test/waitfor.js').setup(args);
 
     after(function(){
         testBrowser.close();

@@ -2,7 +2,7 @@ var tu = require('../test_util.js');
 var assert = require('assert');
 
 exports.setup = function(args){
-    describe('When viewing simple.html', function(){
+    describe('When viewing find.html', function(){
         var driver, exceptionOccurred;
 
         tu.afterEach(function(){

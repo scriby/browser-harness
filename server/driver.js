@@ -88,7 +88,7 @@ Driver.prototype.waitFor = function(args, callback){
     var timeout;
     if(typeof args === 'object'){
         func = args.func;
-        startTime = args.startTime;
+        startTime = args.startTime || new Date();
         timeout = args.timeoutMS || config.timeoutMS;
     } else {
         func = args;
@@ -115,10 +115,10 @@ Driver.prototype.waitFor = function(args, callback){
         } else {
             if(new Date() - startTime < timeout){
                 setTimeout(function(){
-                    self.waitFor({ func: func, startTime: startTime }, callback);
+                    self.waitFor({ func: func, timeoutMS: timeout, startTime: startTime }, callback);
                 }, config.retryMS);
             } else {
-                return callback(new Error('waitFor condition timed out: "' + func.toString()));
+                return callback(new Error('waitFor condition timed out (' + timeout + '): "' + func.toString()));
             }
         }
     });

@@ -2,7 +2,7 @@ var tu = require('../test_util.js');
 var assert = require('assert');
 
 exports.setup = function(args){
-    describe('When viewing click.html', function(){
+    describe('When viewing visible.html', function(){
         var driver, exceptionOccurred;
 
         var ensureHidden = function(selector){
