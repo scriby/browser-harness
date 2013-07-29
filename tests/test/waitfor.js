@@ -39,5 +39,18 @@ exports.setup = function(args){
             assert(div);
             assert.equal(div.length, 1);
         });
+
+        tu.it('times out if the condition is not met', function(){
+            var flow = asyncblock.getCurrentFlow();
+
+            driver.waitFor(function(){
+                return false;
+            }, flow.add({ key: 'waitFor', ignoreError: true }));
+
+            var result = flow.wait('waitFor');
+
+            assert(result instanceof Error);
+            assert.equal(result.message.indexOf('waitFor condition timed out'), 0);
+        });
     });
 };
