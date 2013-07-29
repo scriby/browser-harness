@@ -1,6 +1,16 @@
 (function(){
     var testFrame = document.getElementById('testFrame');
 
+    var patchElementToJson = function(window){
+        if(window.Element.prototype.toJSON == null){
+            //Inject JSON serialization for DOM elements
+            window.Element.prototype.toJSON = function(){
+                return convertFromDomElement(this);
+            };
+        }
+    };
+    patchElementToJson(window);
+
     var patchConsole = function(window){
         if(!window.console.patched){
             var oldLog = window.console.log;
@@ -143,8 +153,7 @@
 
         if(testFrame.contentWindow.$ == null){
             //JQuery is not loaded in test frame. Inject the harness's copy into it
-            var html = testFrame.contentWindow.document.getElementsByTagName('html')[0];
-            testFrame.contentWindow.$ = function(selector, context){ return $(selector, context || html); };
+            testFrame.contentWindow.$ = function(selector, context){ return $(selector, context || testFrame.contentWindow.document); };
         }
 
         patchJQueryExtensions($);
@@ -154,12 +163,7 @@
             testFrame.contentWindow.$.prototype.toJSON = $.prototype.toJSON;
         }
 
-        if(testFrame.contentWindow.Element.prototype.toJSON == null){
-            //Inject JSON serialization for DOM elements
-            testFrame.contentWindow.Element.prototype.toJSON = function(){
-                return convertFromDomElement(this);
-            };
-        }
+        patchElementToJson(testFrame.contentWindow);
 
         if(hasCallback){
             if(args.args){
@@ -195,7 +199,7 @@
         now.setup();
     });
 
-    var _elementCache = {};
+    var _elementCache = window._elementCache = {}; //Expose window._elementCache for debugging
 
     var isDomElement = function(obj){
         return obj != null && obj.nodeName != null && obj.nodeType != null;

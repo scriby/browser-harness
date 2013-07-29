@@ -172,5 +172,140 @@ exports.setup = function(args){
             message.css('height', '');
             assert.equal(message.height(), 0);
         });
+
+        tu.it('innerHeight', function(){
+            assert.equal(message.innerHeight(), 0);
+        });
+
+        tu.it('outerHeight', function(){
+            assert.equal(message.outerHeight(), 0);
+        });
+
+        tu.it('width', function(){
+            assert(message.width() > 0);
+
+            message.width(20);
+            assert.equal(message.width(), 20);
+
+            message.css('width', '');
+            assert(message.width() > 0);
+        });
+
+        tu.it('innerWidth', function(){
+            assert(message.innerWidth() > 0);
+        });
+
+        tu.it('outerWidth', function(){
+            assert(message.outerWidth() > 0);
+        });
+
+        tu.it('offset', function(){
+            var offset = message.offset();
+
+            assert(offset.top > 0);
+            assert(offset.left > 0);
+        });
+
+        tu.it('position', function(){
+            var position = message.position();
+
+            assert.equal(position.top, 0);
+            assert.equal(position.left, 0);
+        });
+
+        tu.it('scrollLeft', function(){
+            assert.equal(message.scrollLeft(), 0);
+        });
+
+        tu.it('scrollTop', function(){
+            assert.equal(message.scrollTop(), 0);
+        });
+
+        tu.it('hide show', function(){
+            assert(message.is(':visible'));
+
+            message.hide();
+            assert(!message.is(':visible'));
+
+            message.show();
+            assert(message.is(':visible'));
+        });
+
+        tu.it('toggle', function(){
+            assert(message.is(':visible'));
+
+            message.toggle();
+            assert(!message.is(':visible'));
+
+            message.toggle();
+            assert(message.is(':visible'));
+        });
+
+        tu.it('children', function(){
+            var children = driver.findVisible('body').children();
+            assert(children.length > 0);
+        });
+
+        tu.it('closest', function(){
+            var body = message.closest('body');
+
+            assert(body);
+            assert.equal(body.length, 1);
+        });
+
+        tu.it('contents', function(){
+            var contents = driver.findVisible('body').children();
+            assert(contents.length > 0);
+        });
+
+        tu.it('first', function(){
+            var input = driver.findVisibles('input').first();
+            assert(input);
+            assert(input.length === 1);
+        });
+
+        tu.it('has', function(){
+            var body = driver.findVisibles('body').has('input');
+
+            assert(body);
+            assert(body.length === 1);
+        });
+
+        tu.it('is', function(){
+            var body = driver.findElement('body');
+
+            assert(body.is(':visible'));
+        });
+
+        tu.it('last', function(){
+            var input = driver.findVisibles('input').last();
+            assert(input);
+            assert(input.length === 1);
+        });
+
+        tu.it('next', function(){
+            var input = driver.findVisibles('input').first().next();
+
+            assert(input);
+            assert(input.length === 1);
+        });
+
+        tu.it('nextAll', function(){
+            var inputs = driver.findVisibles('input').nextAll();
+
+            assert(inputs);
+            assert(inputs.length > 0);
+        });
+
+        tu.it('nextUntil', function(){
+            var untilDiv = driver.findVisible('input:first').nextUntil('div');
+
+            assert(untilDiv);
+            assert(untilDiv.length > 0);
+        });
+
+        tu.it('offsetParent', function(){
+            assert.equal(message.offsetParent().id, driver.findVisible('#message-container').id);
+        });
     });
 };
