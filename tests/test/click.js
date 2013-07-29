@@ -32,7 +32,6 @@ exports.setup = function(args){
                 testButton.click();
             } catch(e){
                 exceptionOccurred = true;
-                assert.equal(e.message.indexOf('Error: Element(s) are not actionable. click failed.'), 0);
             }
 
             assert.equal(message.html(), '');
@@ -45,7 +44,6 @@ exports.setup = function(args){
                 testLink.click();
             } catch(e){
                 exceptionOccurred = true;
-                assert.equal(e.message.indexOf('Error: Element(s) are not actionable. click failed.'), 0);
             }
 
             assert(exceptionOccurred);
