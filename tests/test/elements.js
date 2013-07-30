@@ -157,7 +157,7 @@ exports.setup = function(args){
             assert.equal(message.css('display'), 'block');
 
             message.css('display', 'none');
-            assert.equal(message.css('display'), 'none');
+            assert.equal(message.css('display'), 'none'); //todo: This is currently failing in Firefox. Not really sure why yet.
 
             message.css('display', '');
             assert.equal(message.css('display'), 'block');
@@ -182,35 +182,45 @@ exports.setup = function(args){
         });
 
         tu.it('width', function(){
-            assert(message.width() > 0);
+            var widthTest = driver.findVisible('#width-test');
 
-            message.width(20);
-            assert.equal(message.width(), 20);
+            assert(widthTest.width() > 0);
 
-            message.css('width', '');
-            assert(message.width() > 0);
+            widthTest.width(20);
+            assert.equal(widthTest.width(), 20);
+
+            widthTest.css('width', '');
+            assert(widthTest.width() > 0);
         });
 
         tu.it('innerWidth', function(){
-            assert(message.innerWidth() > 0);
+            var widthTest = driver.findVisible('#width-test');
+
+            assert(widthTest.innerWidth() > 0);
         });
 
         tu.it('outerWidth', function(){
-            assert(message.outerWidth() > 0);
+            var widthTest = driver.findVisible('#width-test');
+
+            assert(widthTest.outerWidth() > 0);
         });
 
         tu.it('offset', function(){
-            var offset = message.offset();
+            var widthTest = driver.findVisible('#width-test');
+
+            var offset = widthTest.offset();
 
             assert(offset.top > 0);
             assert(offset.left > 0);
         });
 
         tu.it('position', function(){
-            var position = message.position();
+            var widthTest = driver.findVisible('#width-test');
 
-            assert.equal(position.top, 0);
-            assert.equal(position.left, 0);
+            var position = widthTest.position();
+
+            assert(position.top > 0);
+            assert(position.left > 0);
         });
 
         tu.it('scrollLeft', function(){
@@ -222,23 +232,27 @@ exports.setup = function(args){
         });
 
         tu.it('hide show', function(){
-            assert(message.is(':visible'));
+            var testDiv = driver.findElement('#test-div');
 
-            message.hide();
-            assert(!message.is(':visible'));
+            assert(testDiv.is(':visible'));
 
-            message.show();
-            assert(message.is(':visible'));
+            testDiv.hide();
+            assert(!testDiv.is(':visible'));
+
+            testDiv.show();
+            assert(testDiv.is(':visible'));
         });
 
         tu.it('toggle', function(){
-            assert(message.is(':visible'));
+            var testDiv = driver.findElement('#test-div');
 
-            message.toggle();
-            assert(!message.is(':visible'));
+            assert(testDiv.is(':visible'));
 
-            message.toggle();
-            assert(message.is(':visible'));
+            testDiv.toggle();
+            assert(!testDiv.is(':visible'));
+
+            testDiv.toggle();
+            assert(testDiv.is(':visible'));
         });
 
         tu.it('children', function(){
@@ -305,7 +319,66 @@ exports.setup = function(args){
         });
 
         tu.it('offsetParent', function(){
-            assert.equal(message.offsetParent().id, driver.findVisible('#message-container').id);
+            //todo: This test is currently breaking in FireFox. Think it deals with how jQuery is injected into the test frame.
+            //Including jQuery directly into the test frame resolves the problem.
+
+            assert.equal(message.offsetParent().attr('id'), driver.findVisible('#message-container').attr('id'));
+        });
+
+        tu.it('parent', function(){
+            assert.equal(message.parent().attr('id'), driver.findVisible('#message-container').attr('id'));
+        });
+
+        tu.it('parents', function(){
+            assert.equal(message.parents().length, 3);
+        });
+
+        tu.it('parentsUntil', function(){
+            assert.equal(message.parentsUntil('html').length, 2);
+        });
+
+        tu.it('prev', function(){
+            var prevInput = driver.findVisible('input:last').prev();
+
+            assert(prevInput);
+            assert.equal(prevInput.length, 1);
+        });
+
+        tu.it('prevAll', function(){
+            var inputs = driver.findVisibles('input').prevAll();
+
+            assert(inputs);
+            assert(inputs.length > 0);
+        });
+
+        tu.it('prevUntil', function(){
+            var untilDiv = driver.findVisible('input:last').prevUntil('div');
+
+            assert(untilDiv);
+            assert(untilDiv.length > 0);
+        });
+
+        tu.it('siblings', function(){
+            var siblings = driver.findVisible('input:last').siblings();
+
+            assert(siblings.length > 0);
+        });
+
+        tu.it('data removeData', function(){
+            assert.equal(message.data('test'), null);
+
+            message.data('test', 'test');
+            assert.equal(message.data('test'), 'test');
+
+            message.removeData('test');
+            assert.equal(message.data('test'), null);
+        });
+
+        tu.it('filter', function(){
+            var first = driver.findVisibles('input').filter(':first');
+
+            assert(first);
+            assert.equal(first.length, 1);
         });
     });
 };
