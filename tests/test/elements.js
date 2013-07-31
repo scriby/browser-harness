@@ -157,7 +157,8 @@ exports.setup = function(args){
             assert.equal(message.css('display'), 'block');
 
             message.css('display', 'none');
-            assert.equal(message.css('display'), 'none'); //todo: This is currently failing in Firefox. Not really sure why yet.
+
+            assert.equal(message.css('display'), 'none');
 
             message.css('display', '');
             assert.equal(message.css('display'), 'block');
@@ -319,9 +320,6 @@ exports.setup = function(args){
         });
 
         tu.it('offsetParent', function(){
-            //todo: This test is currently breaking in FireFox. Think it deals with how jQuery is injected into the test frame.
-            //Including jQuery directly into the test frame resolves the problem.
-
             assert.equal(message.offsetParent().attr('id'), driver.findVisible('#message-container').attr('id'));
         });
 

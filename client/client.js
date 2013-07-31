@@ -1,4 +1,5 @@
 (function(){
+    var _jQueryScriptText;
     var testFrame = document.getElementById('testFrame');
 
     var patchElementToJson = function(window){
@@ -152,8 +153,8 @@
         }
 
         if(testFrame.contentWindow.$ == null){
-            //JQuery is not loaded in test frame. Inject the harness's copy into it
-            testFrame.contentWindow.$ = function(selector, context){ return $(selector, context || testFrame.contentWindow.document); };
+            //JQuery is not loaded in test frame. Inject it
+            testFrame.contentWindow.eval(_jQueryScriptText);
         }
 
         patchJQueryExtensions($);
@@ -164,7 +165,6 @@
         }
 
         patchElementToJson(testFrame.contentWindow);
-
         if(hasCallback){
             if(args.args){
                 func(convertArgument(args.args), callback);
@@ -174,6 +174,7 @@
         } else {
             try{
                 var result = func(convertArgument(args.args));
+
                 callback(null, result);
             } catch(e){
                 callback((e && e.stack) || (e && e.message) || e || 'A javascript error occurred in the browser');
@@ -196,7 +197,16 @@
     };
 
     now.ready(function(){
-        now.setup();
+        //Fetch the contents of the jQuery script directly so we can inject it into the iframe synchronously if it doesn't have jQuery
+        now.getJqueryScriptText(function(err, contents){
+            if(err){
+                throw err;
+            }
+
+            _jQueryScriptText = contents;
+
+            now.setup();
+        });
     });
 
     var _elementCache = window._elementCache = {}; //Expose window._elementCache for debugging

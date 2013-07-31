@@ -7,30 +7,32 @@
     <iframe id="testFrame" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; border: none"></iframe>
 
     <script type="text/javascript">
-        function parseQuery() {
-            if(location.href.indexOf('?') < 0){
-                return {};
+        (function(){
+            function parseQuery() {
+                if(location.href.indexOf('?') < 0){
+                    return {};
+                }
+                var qs = location.href.substring(location.href.indexOf('?') + 1);
+
+                var query = {};
+                var split = qs.split('&');
+                for(var i = 0; i < split.length; i++) {
+                    var kvp = split[i].split('=');
+                    query[decodeURIComponent(kvp[0])] = decodeURIComponent(kvp[1]);
+                }
+
+                return query;
             }
-            var qs = location.href.substring(location.href.indexOf('?') + 1);
 
-            var query = {};
-            var split = qs.split('&');
-            for(var i = 0; i < split.length; i++) {
-                var kvp = split[i].split('=');
-                query[decodeURIComponent(kvp[0])] = decodeURIComponent(kvp[1]);
-            }
+            var query = parseQuery();
+            var harnessHost = window.harnessHost = query.host || 'http://localhost:4500';
 
-            return query;
-        }
-
-        var query = parseQuery();
-        var host = query.host || 'http://localhost:4500';
-
-        document.write('<scr' + 'ipt type="text/javascript" src="' + host + '/vendor/jquery.js"></scr' + 'ipt>');
-        document.write('<scr' + 'ipt type="text/javascript" src="' + host + '/vendor/jquery.cookie.js"></scr' + 'ipt>');
-        document.write('<scr' + 'ipt type="text/javascript" src="' + host + '/vendor/augment.js"></scr' + 'ipt>');
-        document.write('<scr' + 'ipt type="text/javascript" src="' + host + '/nowjs/now.js"></scr' + 'ipt>');
-        document.write('<scr' + 'ipt type="text/javascript" src="' + host + '/client.js"></scr' + 'ipt>');
+            document.write('<scr' + 'ipt type="text/javascript" src="' + harnessHost + '/vendor/jquery.js"></scr' + 'ipt>');
+            document.write('<scr' + 'ipt type="text/javascript" src="' + harnessHost + '/vendor/jquery.cookie.js"></scr' + 'ipt>');
+            document.write('<scr' + 'ipt type="text/javascript" src="' + harnessHost + '/vendor/augment.js"></scr' + 'ipt>');
+            document.write('<scr' + 'ipt type="text/javascript" src="' + harnessHost + '/nowjs/now.js"></scr' + 'ipt>');
+            document.write('<scr' + 'ipt type="text/javascript" src="' + harnessHost + '/client.js"></scr' + 'ipt>');
+        })();
     </script>
 </body>
 </html>

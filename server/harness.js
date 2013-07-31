@@ -1,3 +1,4 @@
+var fs = require('fs');
 var events = require('events');
 var express = require('express');
 
@@ -18,6 +19,15 @@ exports.config = require('./config.js');
 
 exports.listen = function(port, callback){
     server.listen(port || 4500, callback);
+};
+
+var _jqCache;
+everyone.now.getJqueryScriptText = function(callback){
+    if(!_jqCache){
+        _jqCache = fs.readFileSync(__dirname + '/../client/vendor/jquery.js', 'utf8');
+    }
+
+    return callback(null, _jqCache);
 };
 
 everyone.now.setup = function(){
