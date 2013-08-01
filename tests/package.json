@@ -1,0 +1,10 @@
+{
+    "name": "browser-harness-tests",
+    "version": "0.0.1",
+    "dependencies": {
+        "asyncblock": "2.1.13",
+        "async": "0.2.9",
+        "mocha": "1.12.0"
+    },
+    "private": true
+}
