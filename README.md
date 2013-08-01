@@ -8,4 +8,3 @@ browser-harness
 * Handle alert, input, etc.
 * Ability to get / set cookies
 * Documentation
-* Tests
