@@ -2,11 +2,8 @@ var events = require('events');
 
 var config = require('./config.js');
 
-var asyncblock;
-try{
-    //Use asyncblock to manage flow control if it's available
-    asyncblock = require('asyncblock');
-} catch(e){ }
+//Use asyncblock to manage flow control if it's available
+var asyncblock = process.__asyncblock_included__;
 
 var ElementProxy = require('./element_proxy.js');
 
