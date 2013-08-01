@@ -31,6 +31,8 @@ describe('', function(){
     require('./test/visible.js').setup(args);
     require('./test/elements.js').setup(args);
     require('./test/waitfor.js').setup(args);
+    require('./test/jquery.js').setup(args);
+    require('./test/no-fibers.js').setup(args);
 
     after(function(){
         testBrowser.close();

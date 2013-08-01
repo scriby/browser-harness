@@ -78,6 +78,10 @@ Driver.prototype.setUrl = function(url, callback){
         }
     }
 
+    if(callback == null){
+        throw new Error('callback is required');
+    }
+
     this.now.setUrl(url, callback);
 };
 
@@ -103,6 +107,10 @@ Driver.prototype.waitFor = function(args, callback){
         if(flow){
             return flow.sync( this.waitFor(args, flow.add()) );
         }
+    }
+
+    if(callback == null){
+        throw new Error('callback is required');
     }
 
     this.exec(args, function(err, result){
@@ -145,6 +153,10 @@ Driver.prototype.findElement = function(args, callback){
         if(flow){
             return flow.sync( this.findElement(args, flow.add()) );
         }
+    }
+
+    if(callback == null){
+        throw new Error('callback is required');
     }
 
     this.exec({
@@ -224,6 +236,10 @@ Driver.prototype.findVisible = function(args, callback){
         if(flow){
             return flow.sync( this.findVisible(args, flow.add()) );
         }
+    }
+
+    if(callback == null){
+        throw new Error('callback is required');
     }
 
     this.findElement(args, function(err, element){
