@@ -32,6 +32,17 @@ var _defaultConfig = {
     },
 
     linux: {
+        chrome: {
+            location: 'chromium-browser',
+            args: [ '*URL*', '--user-data-dir=/tmp', '-incognito']
+        },
+
+        firefox: {
+            location: "firefox",
+            args: [ '*URL*', '-P harness' ]
+        },
+
+
         phantomjs: {
             location: 'phantomjs',
             args: [ __dirname + '/phantom-bootstrap.js', '*URL*' ]
