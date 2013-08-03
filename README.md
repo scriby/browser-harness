@@ -42,6 +42,17 @@ Due to the way browser harness interacts with the browser, there are a few limit
 * Harness.html connects to the browser harness server, and begins running your tests
 * Your tests will control a browser running within an iframe in harness.html
 
+### See it in action
+
+An example of using the project can be found under the [browser-harness-bootstrap-tests](https://github.com/scriby/browser-harness-bootstrap-tests) repository.
+
+#### Screencasts
+
+* [Tests running in Chrome](http://screencast.com/t/0TaRAmUD)
+* [Tests running in Firefox](http://screencast.com/t/n6hxBjMhsh)
+* [Tests running in Safari](http://screencast.com/t/3HmnMfMC)
+* [Tests running in PhantomJS](http://screencast.com/t/Wd4q5kSPsT)
+
 ### Roadmap
 
 
@@ -52,6 +63,7 @@ Due to the way browser harness interacts with the browser, there are a few limit
 * Ability to take screen shots with phantomjs / slimerjs (possible with others?)
 * Switch out NowJS support for plain Socket.IO for easier Windows support
 * Better support detecting javascript errors in the browser
-* Build in support for other event types like right click, mouse down, mouse up, etc.
+* Build in support for other event types like right click, mouse down, mouse up, keys, etc.
+* More robust error handling
 * See what can be done to make it easier to interact with file upload controls
 * Documentation
