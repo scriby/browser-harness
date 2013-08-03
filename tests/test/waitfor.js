@@ -19,18 +19,16 @@ exports.setup = function(args){
             var flow = asyncblock.getCurrentFlow();
 
             driver.waitFor({
-                func: function() {
+                condition: function() {
                     return $('div.test-div').length > 0;
+                },
+
+                exec: function(){
+                    $('body').append($('<div>test</div>').addClass('test-div'));
                 },
 
                 timeoutMS: 2000
             }, flow.add('waitFor'));
-
-            flow.sync( setTimeout(flow.add(), 10) );
-
-            driver.exec(function(){
-                $('body').append($('<div>test</div>').addClass('test-div'));
-            });
 
             flow.wait('waitFor');
 

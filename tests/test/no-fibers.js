@@ -101,20 +101,13 @@ exports.setup = function(args){
         it('watifor waits for a div to appear', function(done){
             async.waterfall([
                 function(callback){
-                    setTimeout(function(){
-                        driver.exec(
-                            function(){
-                                $('body').append($('<div>test</div>').addClass('waitfor-test-div'));
-                            },
-                            function(err){
-                                if(err) { callback(err); }
-                            }
-                        );
-                    }, 10);
-
                     driver.waitFor({
-                        func: function() {
+                        condition: function() {
                             return $('div.waitfor-test-div').length > 0;
+                        },
+
+                        exec: function(){
+                            $('body').append($('<div>test</div>').addClass('waitfor-test-div'));
                         },
 
                         timeoutMS: 2000

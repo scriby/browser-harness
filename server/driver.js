@@ -84,13 +84,12 @@ Driver.prototype.setUrl = function(url, callback){
 
 Driver.prototype.waitFor = function(args, callback){
     var self = this;
-    var startTime;
-    var func;
-    var timeout;
+    var startTime, func, timeout, exec;
     if(typeof args === 'object'){
-        func = args.func;
+        func = args.condition;
         startTime = args.startTime || new Date();
         timeout = args.timeoutMS || config.timeoutMS;
+        exec = args.exec;
     } else {
         func = args;
         startTime = new Date();
@@ -110,7 +109,7 @@ Driver.prototype.waitFor = function(args, callback){
         throw new Error('callback is required');
     }
 
-    this.exec(args, function(err, result){
+    this.exec({ func: func }, function(err, result){
         if(err){
             return callback(err);
         }
@@ -120,13 +119,21 @@ Driver.prototype.waitFor = function(args, callback){
         } else {
             if(new Date() - startTime < timeout){
                 setTimeout(function(){
-                    self.waitFor({ func: func, timeoutMS: timeout, startTime: startTime }, callback);
+                    self.waitFor({ condition: func, timeoutMS: timeout, startTime: startTime }, callback);
                 }, config.retryMS);
             } else {
                 return callback(new Error('waitFor condition timed out (' + timeout + '): "' + func.toString()));
             }
         }
     });
+
+    if(exec){
+        this.exec({ func: exec }, function(err){
+            if(err){
+                return callback(err); //todo: prevent double callback
+            }
+        });
+    }
 };
 
 Driver.prototype.findElement = function(args, callback){

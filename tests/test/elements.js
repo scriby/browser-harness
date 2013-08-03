@@ -22,7 +22,7 @@ exports.setup = function(args){
 
             //Focus is async in IE, so need to wait for changes
             driver.waitFor({
-                func: function(){
+                condition: function(){
                     var check =  $('input[type=checkbox]');
                     return check.is(':focus') || document.activeElement === check[0]; //is(':focus') doesn't work in phantomjs 1.9
                 },
@@ -37,7 +37,7 @@ exports.setup = function(args){
 
             //Focus is async in IE, so need to wait for changes
             driver.waitFor({
-                func: function(){
+                condition: function(){
                     var check =  $('input[type=checkbox]');
                     return check.is(':focus') || document.activeElement === check[0]; //is(':focus') doesn't work in phantomjs 1.9
                 },
@@ -47,7 +47,7 @@ exports.setup = function(args){
             check.blur();
 
             driver.waitFor({
-                func: function(){
+                condition: function(){
                     var check =  $('input[type=checkbox]');
                     return !check.is(':focus') && document.activeElement !== check[0]; //is(':focus') doesn't work in phantomjs 1.9
                 },
