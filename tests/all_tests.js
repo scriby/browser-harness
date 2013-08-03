@@ -32,6 +32,7 @@ describe('', function(){
     require('./test/elements.js').setup(args);
     require('./test/waitfor.js').setup(args);
     require('./test/jquery.js').setup(args);
+    require('./test/transition.js').setup(args);
     require('./test/no-fibers.js').setup(args);
 
     after(function(){

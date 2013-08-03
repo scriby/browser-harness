@@ -11,34 +11,57 @@ ElementProxy.prototype._exec = function(args, callback){
         funcArgs.length--;
     }
 
-    return this.driver.exec({
-        func: function(args){
-            var result;
+    //Click has to be special cased. "Click"-ing an anchor using jQuery triggers the handlers, but does not follow the link
+    if(args.func === 'click'){
+        return this.driver.exec({
+            func: function(args){
+                var elements = $(args.elements);
 
-            var elements = $(args.elements);
-
-            if(args.actionable){
                 if(!elements._isActionable()){
                     throw new Error('Element(s) are not actionable. ' + args.func + ' failed.');
                 }
+
+                var element = elements[0];
+                if(element.click){
+                    element.click();
+                } else {
+                    //Workaround for browsers that don't allow anchors to be clicked, such as phantomjs
+                    var evObj = document.createEvent('Events');
+                    evObj.initEvent('click', true, false);
+                    element.dispatchEvent(evObj);
+                }
+
+                return elements;
+            },
+
+            args: {
+                func: args.func,
+                funcArgs: funcArgs,
+                elements: this
             }
+        }, callback);
+    } else {
+        return this.driver.exec({
+            func: function(args){
+                var result;
 
-            result = elements[args.func].apply(elements, args.funcArgs);
+                var elements = $(args.elements);
+                result = elements[args.func].apply(elements, args.funcArgs);
 
-            return result;
-        },
+                return result;
+            },
 
-        args: {
-            func: args.func,
-            funcArgs: funcArgs,
-            actionable: args.actionable,
-            elements: this //this.driver does not show up in the serialized version of this (probably b/c it's an array)
-        }
-    }, callback);
+            args: {
+                func: args.func,
+                funcArgs: funcArgs,
+                elements: this //this.driver does not show up in the serialized version of this (probably b/c it's an array)
+            }
+        }, callback);
+    }
 };
 
 ElementProxy.prototype.click = function(callback){
-    return this._exec({ func: 'click', args: arguments, actionable: true });
+    return this._exec({ func: 'click', args: arguments });
 };
 
 ElementProxy.prototype.focus = function(callback){

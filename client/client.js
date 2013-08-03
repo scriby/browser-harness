@@ -119,7 +119,7 @@
         };
     };
 
-    now.exec = function(args, callback){
+    var exec = function(args, callback){
         var hasCallback = false;
         var match = /^function\s*\(([^\)]*)\)/.exec(args.func);
         var funcArgs;
@@ -152,11 +152,6 @@
             func = new testFrame.contentWindow.Function(funcArgs[0], funcArgs[1], funcText);
         }
 
-        if(testFrame.contentWindow.$ == null){
-            //JQuery is not loaded in test frame. Inject it
-            testFrame.contentWindow.eval(_jQueryScriptText);
-        }
-
         patchJQueryExtensions($);
         patchJQueryExtensions(testFrame.contentWindow.$);
 
@@ -182,15 +177,43 @@
         }
     };
 
+    now.exec = function(args, callback){
+        if(testFrame.contentWindow.$ == null){
+            try{
+                testFrame.contentWindow.eval(_jQueryScriptText);
+            } catch(e){
+                //This is a workaround for Firefox. It was having problems with evaluating the jQuery script when the
+                //frame was transitioning between pages. I couldn't figure out a way to detect whether this would error
+                //ahead of time
+                setTimeout(function(){
+                    now.exec(args, callback);
+                }, 100);
+
+                return;
+            }
+        }
+
+        try{
+            exec(args, callback);
+        } catch(e){
+            console.log(e.stack);
+            throw e;
+        }
+    };
+
     now.setUrl = function(url, callback){
         testFrame.src = url;
 
         if (testFrame.attachEvent) {
-          testFrame.attachEvent('onload', function(){
+          var handler = function(){
+              testFrame.detachEvent('onload', handler);
               callback && callback();
-          });
+          };
+
+          testFrame.attachEvent('onload', handler);
         } else {
           testFrame.onload = function(){
+              testFrame.onload = null;
               callback && callback();
           };
         }

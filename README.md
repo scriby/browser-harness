@@ -51,5 +51,7 @@ Due to the way browser harness interacts with the browser, there are a few limit
 * SlimerJS integration
 * Ability to take screen shots with phantomjs / slimerjs (possible with others?)
 * Switch out NowJS support for plain Socket.IO for easier Windows support
+* Better support detecting javascript errors in the browser
+* Build in support for other event types like right click, mouse down, mouse up, etc.
 * See what can be done to make it easier to interact with file upload controls
 * Documentation
