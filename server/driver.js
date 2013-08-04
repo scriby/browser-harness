@@ -203,8 +203,6 @@ Driver.prototype.findElements = Driver.prototype.find = function(args, callback)
 };
 
 var _isVisible = function(element, selector, startTime, callback){
-    //Select not-disabled elements instead of enabled elements because only certain types of elements can be enabled
-    //For instance, anchor tags cannot be enabled - so they will always fail an enabled check
     element._filterVisible(function(err, visibleElements){
         if(err) {
             return callback(err);
