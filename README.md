@@ -3,10 +3,10 @@ Browser Harness
 
 ### What is this?
 
-* **Simple** - Use jQuery to interact with items on the page and check expected conditions
+* **Simple** - Use jQuery to interact with items on the page and check expected conditions. Optional fibers support makes test writing and reading straightforward.
 * **Fast** - Can perform 50+ actions per second in the browser
 * **Cross-browser** - Tests run on any modern web browser, and even some old ones
-* **Flexible** - Write tests in whatever node.js framework you want. Interact with your web site / app with javascript.
+* **Flexible** - Write tests in whatever node.js framework you want
 
 ### Browser Support
 
@@ -24,16 +24,6 @@ PhantomJS        ✓
 SlimerJS                      ✓
 Other                         ✓
 ```
-
-### Limitations
-
-Due to the way browser harness interacts with the browser, there are a few limitations.
-
-* Requires [harness.html](https://github.com/scriby/browser-harness/blob/master/client/harness.html) be served from the domain of the site/application being tested
-    * Warning: Be careful not to include harness.html in production, as it opens a potential cross-site scripting attack vector
-* Can only interact with pages hosted from within a single domain (barring some CORS configuration)
-* Can not upload files from the local computer (but should be able to spoof file uploads via javascript)
-* Can not interact directly with cookies that have the httponly flag
 
 ### How does it work?
 
@@ -53,6 +43,133 @@ An example of using the project can be found under the [browser-harness-bootstra
 * [Tests running in Safari](http://screencast.com/t/3HmnMfMC)
 * [Tests running in PhantomJS](http://screencast.com/t/Wd4q5kSPsT)
 
+### Example
+
+The following example uses mocha, but any test framework may be used.
+
+```javascript
+//This little utility function helps reduce the boilerplate needed by each test
+//Running the code within an [asyncblock](https://github.com/scriby/asyncblock) allows it to be
+//written in blocking style, which users [fibers](https://github.com/laverdet/node-fibers) behind the scenes
+var _it = function(name, exec){
+    it(name, function(done){
+        asyncblock(exec, done);
+    });
+};
+
+describe('An abridged test of the bootstrap docs', function(){
+    var driver, testBrowser;
+
+    before(function(done){
+        //Tell the browser harness to listen for connections on port 4500
+        harness.listen(4500, function(){
+            //This event is fired when a browser makes a connection and is ready to run tests
+            harness.events.once('ready', function(_driver){
+                driver = _driver;
+                done();
+            });
+
+            //The harness.Browser class can be used to spawn browser instances on this machine
+            //Here, we're using default settings for Chrome
+            testBrowser = new harness.Browser({ type: 'chrome' });
+
+            //Tell the browser to open the harness page, which will connect it to the harness server
+            //By default, the test will connect to localhost:4500
+            //Pass host=address on the query string to change the address of the harness server
+            testBrowser.open('http://localhost:8000/harness.html');
+        });
+    });
+
+    it('Loads index.html', function(done){
+        //setUrl tells the browser to navigate to the page.
+        //The callback is called once the load event of the page has been called
+        driver.setUrl('http://localhost:8000/index.html', done);
+    });
+
+    //This test uses the _it method defined above, which lets code be written in "blocking style"
+    _it('Finds the h1 element', function(done){
+        //findVisible finds an element only if it exists and is visible
+        //It accepts any jQuery selector
+        var h1 = driver.findVisible('.masthead h1');
+
+        //findVisible returns an object that behaves like a jQuery variable
+        assert.equal(h1.length, 1);
+
+        //The call to .html() makes a roundtrip to the browser, but fibers makes it
+        //so we don't have to deal with callbacks directly
+        assert.equal(h1.html(), 'Bootstrap');
+    });
+
+    _it('Clicks on javascript', function(){
+        //The selector used here is not ideal. Usually we want to select by an id or class.
+        //For testing your own applications, it's generally better to add classes than use a goofy selector.
+        driver.findVisible('a[href="./javascript.html"]').click(); //jQuery chaining works
+
+        //Browser harness encourages you not to wait for explicit time periods.
+        //In fact, it doesn't even have a built-in sleep function
+        //Instead, use conditions that indicate when it's safe to continue test execution
+        driver.waitFor(function(){
+            return location.href.indexOf('/javascript.html') >= 0; //This function runs from within the browser context
+        });
+    });
+
+    _it('Clicks on Modal', function(){
+        driver.findVisible('a[href="#modals"]').click();
+
+        driver.waitFor(function(){
+            return location.href.indexOf('#modals') >= 0;
+        });
+    });
+
+    _it('Launches the demo modal', function(){
+        driver.findVisible('a[href="#myModal"]').click();
+        var modal = driver.findVisible('#myModal');
+
+        //You can call findVisible(s)/findElement(s) on elements to scope the call to children of that element
+        modal.findVisible('.modal-footer .btn[data-dismiss=modal]').click();
+
+        //The close is animated, so need to wait for it
+        driver.waitFor(function(){
+            return $('#myModal').css('display') === 'none';
+        });
+    });
+
+    after(function(){
+        //Close the browser instance that we spawned
+        testBrowser.close();
+    });
+});
+```
+
+### Limitations
+
+Due to the way browser harness interacts with the browser, there are a few limitations.
+
+* Requires [harness.html](https://github.com/scriby/browser-harness/blob/master/client/harness.html) be served from the domain of the site/application being tested
+    * Warning: Be careful not to include harness.html in production, as it opens a potential cross-site scripting attack vector
+* Can only interact with pages hosted from within a single domain (barring some CORS configuration)
+* Can not upload files from the local computer (but should be able to spoof file uploads via javascript)
+* Can not interact directly with cookies that have the httponly flag
+
+### Tests
+
+There are tests for browser harness located under the "tests" folder.
+
+To run the tests:
+
+```
+cd tests
+
+#Install test dependencies
+npm install
+
+#Run test with mocha. Set a 10 second timeout as sometimes it takes a bit for the browser to open initially
+#You can also use your global mocha installation if you have it installed already
+./node_modules/mocha/bin/mocha all_tests.js -R spec -t 10000
+
+#Edit the test_browser file to run the tests in a different browser (defaults to phantomjs)
+```
+
 ### Roadmap
 
 
@@ -66,4 +183,5 @@ An example of using the project can be found under the [browser-harness-bootstra
 * Build in support for other event types like right click, mouse down, mouse up, keys, etc.
 * More robust error handling
 * See what can be done to make it easier to interact with file upload controls
+* "Ease of use" improvements around common functions, like waiting for a specific page
 * Documentation
