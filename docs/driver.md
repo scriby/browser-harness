@@ -5,6 +5,8 @@ Documentation for [driver.js](https://github.com/scriby/browser-harness/blob/mas
 A driver instance is provided when a browser connects to the harness to run tests. The driver can be used to interact
 with the browser.
 
+## Methods
+
 ### setUrl
 
 `void setUrl(url: string, [callback])`
@@ -258,5 +260,47 @@ driver.exec({
 
   console.log(result);
   callback();
+});
+```
+
+## Events
+
+### console.log
+
+Emitted when console.log is called in the browser.
+
+```javascript
+driver.events.on('console.log', function(text){
+  console.log('console.log: ' + text);
+});
+```
+
+### console.warn
+
+Emitted when console.warn is called in the browser.
+
+```javascript
+driver.events.on('console.warn', function(text){
+  console.log('console.warn: ' + text);
+});
+```
+
+### console.error
+
+Emitted when console.error is called in the browser.
+
+```javascript
+driver.events.on('console.error', function(text){
+  console.log('console.error: ' + text);
+});
+```
+
+### window.onerror
+
+Emitted when window.onerror is called in the browser.
+
+```javascript
+driver.events.on('window.onerror', function(info){
+  console.log('window.onerror': + info);
 });
 ```

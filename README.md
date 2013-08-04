@@ -162,6 +162,10 @@ Due to the way browser harness interacts with the browser, there are a few limit
 * Can not upload files from the local computer (but should be able to spoof file uploads via javascript)
 * Can not interact directly with cookies that have the httponly flag
 
+### Documentation
+
+[docs](https://github.com/scriby/browser-harness/tree/master/docs)
+
 ### Tests
 
 There are tests for browser harness located under the "tests" folder.
