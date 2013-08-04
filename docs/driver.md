@@ -1,6 +1,9 @@
-# Driver.js
+# Driver
 
 Documentation for [driver.js](https://github.com/scriby/browser-harness/blob/master/server/driver.js).
+
+A driver instance is provided when a browser connects to the harness to run tests. The driver can be used to interact
+with the browser.
 
 ### setUrl
 
@@ -152,8 +155,8 @@ asyncblock(function(){
 ```javascript
 async.forEach(
   driver.findVisibles('input[type=text]'),
-  function(textbox, callback){
-    textbox.val('test', callback);
+  function(textboxes, callback){
+    textboxes.val('test', callback);
   },
   function(err){
     callback(err);
