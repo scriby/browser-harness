@@ -34,7 +34,7 @@ Other                         ✓
 
 ### See it in action
 
-An example of using the project can be found under the [browser-harness-bootstrap-tests](https://github.com/scriby/browser-harness-bootstrap-tests) repository.
+A standalone example of using browser harness can be found under the [browser-harness-bootstrap-tests](https://github.com/scriby/browser-harness-bootstrap-tests) repository.
 
 #### Screencasts
 
@@ -49,97 +49,104 @@ The following example uses mocha, but any test framework may be used.
 
 ```javascript
 //This little utility function helps reduce the boilerplate needed by each test
-//Running the code within an [asyncblock](https://github.com/scriby/asyncblock) allows it to be
-//written in blocking style, which users [fibers](https://github.com/laverdet/node-fibers) behind the scenes
 var _it = function(name, exec){
-    it(name, function(done){
-        asyncblock(exec, done);
-    });
+  it(name, function(done){
+    asyncblock(exec, done);
+  });
 };
 
 describe('An abridged test of the bootstrap docs', function(){
-    var driver, testBrowser;
+  var driver, testBrowser;
 
-    before(function(done){
-        //Tell the browser harness to listen for connections on port 4500
-        harness.listen(4500, function(){
-            //This event is fired when a browser makes a connection and is ready to run tests
-            harness.events.once('ready', function(_driver){
-                driver = _driver;
-                done();
-            });
+  before(function(done){
+    //Tell the browser harness to listen for connections on port 4500
+    harness.listen(4500, function(){
+      //This event is fired when a browser makes a connection and is ready to run tests
+      harness.events.once('ready', function(_driver){
+        driver = _driver;
+          done();
+      });
 
-            //The harness.Browser class can be used to spawn browser instances on this machine
-            //Here, we're using default settings for Chrome
-            testBrowser = new harness.Browser({ type: 'chrome' });
+      //The harness.Browser class can be used to spawn browser instances on this machine
+      //Here, we're using default settings for Chrome
+      testBrowser = new harness.Browser({ type: 'chrome' });
 
-            //Tell the browser to open the harness page, which will connect it to the harness server
-            //By default, the test will connect to localhost:4500
-            //Pass host=address on the query string to change the address of the harness server
-            testBrowser.open('http://localhost:8000/harness.html');
-        });
+      //Tell the browser to open the harness page, which will connect it to the harness server
+      //By default, the test will connect to localhost:4500
+      //Pass host=address on the query string to change the address of the harness server
+      testBrowser.open('http://localhost:8000/harness.html');
     });
+  });
 
-    it('Loads index.html', function(done){
-        //setUrl tells the browser to navigate to the page.
-        //The callback is called once the load event of the page has been called
-        driver.setUrl('http://localhost:8000/index.html', done);
+  it('Loads index.html', function(done){
+    //setUrl tells the browser to navigate to the page.
+    //The callback is called once the load event of the page has been called
+    driver.setUrl('http://localhost:8000/index.html', done);
+  });
+
+  //This test uses the _it method defined above, which lets code be written in "blocking style"
+  _it('Finds the h1 element', function(done){
+    //findVisible finds an element only if it exists and is visible
+    //It accepts any jQuery selector
+    var h1 = driver.findVisible('.masthead h1');
+
+    //findVisible returns an object that behaves like a jQuery variable
+    assert.equal(h1.length, 1);
+
+    //The call to .html() makes a roundtrip to the browser, but fibers makes it
+    //so we don't have to deal with callbacks directly
+    assert.equal(h1.html(), 'Bootstrap');
+  });
+
+  _it('Clicks on javascript', function(){
+    //The selector used here is not ideal. Usually we want to select by an id or class.
+    //For testing your own applications, it's generally better to add classes than use a goofy selector.
+    driver.findVisible('a[href="./javascript.html"]').click(); //jQuery chaining works
+
+    //Browser harness encourages you not to wait for explicit time periods.
+    //In fact, it doesn't even have a built-in sleep function
+    //Instead, use conditions that indicate when it's safe to continue test execution
+    driver.waitFor(function(){
+      return location.href.indexOf('/javascript.html') >= 0; //This function runs from within the browser context
     });
+  });
 
-    //This test uses the _it method defined above, which lets code be written in "blocking style"
-    _it('Finds the h1 element', function(done){
-        //findVisible finds an element only if it exists and is visible
-        //It accepts any jQuery selector
-        var h1 = driver.findVisible('.masthead h1');
+  _it('Clicks on Modal', function(){
+    driver.findVisible('a[href="#modals"]').click();
 
-        //findVisible returns an object that behaves like a jQuery variable
-        assert.equal(h1.length, 1);
-
-        //The call to .html() makes a roundtrip to the browser, but fibers makes it
-        //so we don't have to deal with callbacks directly
-        assert.equal(h1.html(), 'Bootstrap');
+    driver.waitFor(function(){
+        return location.href.indexOf('#modals') >= 0;
     });
+  });
 
-    _it('Clicks on javascript', function(){
-        //The selector used here is not ideal. Usually we want to select by an id or class.
-        //For testing your own applications, it's generally better to add classes than use a goofy selector.
-        driver.findVisible('a[href="./javascript.html"]').click(); //jQuery chaining works
+  _it('Launches the demo modal', function(){
+    driver.findVisible('a[href="#myModal"]').click();
+    var modal = driver.findVisible('#myModal');
 
-        //Browser harness encourages you not to wait for explicit time periods.
-        //In fact, it doesn't even have a built-in sleep function
-        //Instead, use conditions that indicate when it's safe to continue test execution
-        driver.waitFor(function(){
-            return location.href.indexOf('/javascript.html') >= 0; //This function runs from within the browser context
-        });
+    //You can call findVisible(s)/findElement(s) on elements to scope the call to children of that element
+    modal.findVisible('.modal-footer .btn[data-dismiss=modal]').click();
+
+    //The close is animated, so need to wait for it
+    driver.waitFor(function(){
+      return $('#myModal').css('display') === 'none';
     });
+  });
 
-    _it('Clicks on Modal', function(){
-        driver.findVisible('a[href="#modals"]').click();
-
-        driver.waitFor(function(){
-            return location.href.indexOf('#modals') >= 0;
-        });
-    });
-
-    _it('Launches the demo modal', function(){
-        driver.findVisible('a[href="#myModal"]').click();
-        var modal = driver.findVisible('#myModal');
-
-        //You can call findVisible(s)/findElement(s) on elements to scope the call to children of that element
-        modal.findVisible('.modal-footer .btn[data-dismiss=modal]').click();
-
-        //The close is animated, so need to wait for it
-        driver.waitFor(function(){
-            return $('#myModal').css('display') === 'none';
-        });
-    });
-
-    after(function(){
-        //Close the browser instance that we spawned
-        testBrowser.close();
-    });
+  after(function(){
+    //Close the browser instance that we spawned
+    testBrowser.close();
+  });
 });
 ```
+
+### Fibers support
+
+The module has built-in support for [fibers](https://github.com/laverdet/node-fibers) via asyncblock](https://github.com/scriby/asyncblock).
+To take advantage of it, all you need to do is install asyncblock from npm and wrap your test with it (see above for an example).
+
+Browser harness will auto-detect that asyncblock is being used and turn all asynchronous calls into "blocking-style".
+
+Note that using fibers to write the tests is optional, but it is highly recommended. See [no-fibers.js](https://github.com/scriby/browser-harness/blob/master/tests/test/no-fibers.js) for an example of writing tests without fibers.
 
 ### Limitations
 
