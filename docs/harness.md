@@ -6,7 +6,7 @@ Documentation for [harness.js](https://github.com/scriby/browser-harness/blob/ma
 
 ### listen
 
-void listen(port, [callback])
+`void listen(port, [callback])`
 
 Starts the browser harness server listening on this port. The server receives incoming connections from browsers
 that will run tests.
