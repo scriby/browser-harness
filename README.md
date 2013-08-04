@@ -61,19 +61,19 @@ describe('An abridged test of the bootstrap docs', function(){
   before(function(done){
     //Tell the browser harness to listen for connections on port 4500
     harness.listen(4500, function(){
-      //This event is fired when a browser makes a connection and is ready to run tests
+      //This event is fired when a browser makes a connection and is ready
       harness.events.once('ready', function(_driver){
         driver = _driver;
           done();
       });
 
-      //The harness.Browser class can be used to spawn browser instances on this machine
+      //The harness.Browser class can be used to spawn browser instances
       //Here, we're using default settings for Chrome
       testBrowser = new harness.Browser({ type: 'chrome' });
 
-      //Tell the browser to open the harness page, which will connect it to the harness server
-      //By default, the test will connect to localhost:4500
-      //Pass host=address on the query string to change the address of the harness server
+      //Tell the browser to open the harness page
+      //By default, the test will connect to the harness server at localhost:4500
+      //Pass host=address on the query string to change the address
       testBrowser.open('http://localhost:8000/harness.html');
     });
   });
@@ -84,7 +84,8 @@ describe('An abridged test of the bootstrap docs', function(){
     driver.setUrl('http://localhost:8000/index.html', done);
   });
 
-  //This test uses the _it method defined above, which lets code be written in "blocking style"
+  //This test uses the _it method defined above,
+  //which lets code be written in "blocking style"
   _it('Finds the h1 element', function(done){
     //findVisible finds an element only if it exists and is visible
     //It accepts any jQuery selector
@@ -99,15 +100,17 @@ describe('An abridged test of the bootstrap docs', function(){
   });
 
   _it('Clicks on javascript', function(){
-    //The selector used here is not ideal. Usually we want to select by an id or class.
-    //For testing your own applications, it's generally better to add classes than use a goofy selector.
+    //The selector used here is not ideal. Usually we want to select by an id or class
+    //For testing your own applications, it's generally better to
+    //modify the code than use goofy selectors
     driver.findVisible('a[href="./javascript.html"]').click(); //jQuery chaining works
 
     //Browser harness encourages you not to wait for explicit time periods.
     //In fact, it doesn't even have a built-in sleep function
     //Instead, use conditions that indicate when it's safe to continue test execution
     driver.waitFor(function(){
-      return location.href.indexOf('/javascript.html') >= 0; //This function runs from within the browser context
+      //This function runs from within the browser context
+      return location.href.indexOf('/javascript.html') >= 0;
     });
   });
 
@@ -123,7 +126,8 @@ describe('An abridged test of the bootstrap docs', function(){
     driver.findVisible('a[href="#myModal"]').click();
     var modal = driver.findVisible('#myModal');
 
-    //You can call findVisible(s)/findElement(s) on elements to scope the call to children of that element
+    //You can call findVisible(s)/findElement(s) on elements
+    //to scope the call to children of that element
     modal.findVisible('.modal-footer .btn[data-dismiss=modal]').click();
 
     //The close is animated, so need to wait for it
