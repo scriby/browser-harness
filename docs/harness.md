@@ -4,7 +4,9 @@ Documentation for [harness.js](https://github.com/scriby/browser-harness/blob/ma
 
 ## Methods
 
-**listen**(port, [callback])
+### listen
+
+void listen(port, [callback])
 
 Starts the browser harness server listening on this port. The server receives incoming connections from browsers
 that will run tests.
@@ -20,7 +22,7 @@ harness.listen(4500, function(){
 
 ## Events
 
-**events.ready**
+### events.ready
 
 Indicates that a browser has connected to the harness and is ready to run tests. A [driver](https://github.com/scriby/browser-harness/blob/master/docs/driver.md)
 is the only argument passed to the event callback.
