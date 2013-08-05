@@ -200,4 +200,3 @@ npm install
 * See what can be done to make it easier to interact with file upload controls
 * "Ease of use" improvements around common functions, like waiting for a specific page
 * Documentation
-* Typescript definitions
