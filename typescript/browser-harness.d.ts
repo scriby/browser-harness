@@ -112,7 +112,8 @@ declare module "browser-harness" {
     }
 
     export class Browser {
-        constructor(args: { type: string; location?: string; args?: string[] });
+        //constructor(args: { type: string; location?: string; args?: string[] });
+        constructor(args: { type: string; location?: string; args?: any; });
 
         open(harnessUrl: string, serverUrl?: string);
         close();
