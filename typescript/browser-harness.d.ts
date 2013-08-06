@@ -1,3 +1,8 @@
+// Type definitions for Browser Harness
+// Project: https://github.com/scriby/browser-harness
+// Definitions by: Chris Scribner <https://github.com/scriby>
+// Definitions: https://github.com/borisyankov/DefinitelyTyped
+
 /// <reference path="../node/node.d.ts" />
 
 declare module "browser-harness" {
@@ -45,6 +50,8 @@ declare module "browser-harness" {
     }
 
     export interface ElementProxy {
+        length: number;
+
         click(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         focus(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         blur(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy

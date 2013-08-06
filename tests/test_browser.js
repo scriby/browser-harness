@@ -18,7 +18,7 @@ harness.events.on('ready', function(driver){
     });
 
     driver.events.on('window.onerror', function(info){
-        console.log(info);
+        console.log('window.onerror: ' + info);
     });
 });
 
