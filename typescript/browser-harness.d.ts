@@ -6,7 +6,7 @@
 /// <reference path="../node/node.d.ts" />
 
 declare module "browser-harness" {
-    import events = module("events");
+    import events = require("events");
 
     interface HarnessEvents extends events.NodeEventEmitter {
         once(event: string, listener: (driver: Driver) => void);
@@ -62,7 +62,7 @@ declare module "browser-harness" {
         removeProp(name: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         html(value?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         text(value?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
-        hasClass(className: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        hasClass(className: string, callback?: (err: Error, element: ElementProxy) => void) : boolean
         addClass(className: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         removeClass(className: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         toggleClass(className: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
@@ -94,10 +94,10 @@ declare module "browser-harness" {
         findElement(selector: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         findVisible(selector: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         findVisibles(selector: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
-        isActionable(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        isActionable(callback?: (err: Error, element: ElementProxy) => void) : boolean
         first(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
-        has(arg: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
-        is(arg: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        has(arg: any, callback?: (err: Error, element: ElementProxy) => void) : boolean
+        is(arg: any, callback?: (err: Error, element: ElementProxy) => void) : boolean
         last(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         next(selector?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         nextAll(selector?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
@@ -111,7 +111,6 @@ declare module "browser-harness" {
         prevUntil(selector?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         siblings(selector?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
 
-
         data(name: string, value?: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         removeData(name: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
 
@@ -123,7 +122,7 @@ declare module "browser-harness" {
         constructor(args: { type: string; location?: string; args?: any; });
 
         open(harnessUrl: string, serverUrl?: string);
-        close();
+        close(callback?: Function);
     }
 
     export function listen(port: number, callback?: Function)
