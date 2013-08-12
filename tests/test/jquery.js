@@ -23,5 +23,20 @@ exports.setup = function(args){
 
             assert.equal(test, "verify harness doesn't clobber jquery in the frame");
         });
+
+        tu.it('driver.$ creates an element', function(){
+            var element = driver.$('<div>test</div>').addClass('made-with-driver');
+            var body = driver.findVisible('body');
+            body.append(element);
+
+            var appended = body.findVisible('.made-with-driver');
+
+            assert(appended);
+            assert.equal(appended.length, 1);
+        });
+
+        tu.it('driver.$ converts an element', function(){
+            assert.equal(driver.$(driver.findVisibles('span')[0]).html(), 'asdf');
+        });
     });
 };

@@ -1,5 +1,6 @@
 var ElementProxy = function(driver){
     this.driver = driver;
+    this.isElementProxy = true;
 };
 
 ElementProxy.prototype._exec = function(args, callback){
@@ -15,7 +16,7 @@ ElementProxy.prototype._exec = function(args, callback){
     if(args.func === 'click'){
         return this.driver.exec({
             func: function(args){
-                var elements = $(args.elements);
+                var elements = args.elements;
 
                 if(!elements._isActionable()){
                     throw new Error('Element(s) are not actionable. ' + args.func + ' failed.');
@@ -45,7 +46,7 @@ ElementProxy.prototype._exec = function(args, callback){
             func: function(args){
                 var result;
 
-                var elements = $(args.elements);
+                var elements = args.elements;
                 result = elements[args.func].apply(elements, args.funcArgs);
 
                 return result;
@@ -287,6 +288,11 @@ ElementProxy.prototype.data = function(name, value, callback){
 
 ElementProxy.prototype.removeData = function(name, callback){
     return this._exec({ func: 'removeData', args: arguments });
+};
+
+
+ElementProxy.prototype.append = function(content, callback){
+    return this._exec({ func: 'append', args: arguments });
 };
 
 

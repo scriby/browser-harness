@@ -84,12 +84,13 @@ Driver.prototype.setUrl = function(url, callback){
 
 Driver.prototype.waitFor = function(args, callback){
     var self = this;
-    var startTime, func, timeout, exec;
+    var startTime, func, timeout, exec, funcArgs;
     if(typeof args === 'object'){
         func = args.condition;
         startTime = args.startTime || new Date();
         timeout = args.timeoutMS || config.timeoutMS;
         exec = args.exec;
+        funcArgs = args.args;
     } else {
         func = args;
         startTime = new Date();
@@ -109,7 +110,7 @@ Driver.prototype.waitFor = function(args, callback){
         throw new Error('callback is required');
     }
 
-    this.exec({ func: func }, function(err, result){
+    this.exec({ func: func, args: funcArgs }, function(err, result){
         if(err){
             return callback(err);
         }
@@ -119,7 +120,7 @@ Driver.prototype.waitFor = function(args, callback){
         } else {
             if(new Date() - startTime < timeout){
                 setTimeout(function(){
-                    self.waitFor({ condition: func, timeoutMS: timeout, startTime: startTime }, callback);
+                    self.waitFor({ condition: func, timeoutMS: timeout, startTime: startTime, args: funcArgs }, callback);
                 }, config.retryMS);
             } else {
                 return callback(new Error('waitFor condition timed out (' + timeout + '): "' + func.toString()));
@@ -128,7 +129,7 @@ Driver.prototype.waitFor = function(args, callback){
     });
 
     if(exec){
-        this.exec({ func: exec }, function(err){
+        this.exec({ func: exec, args: funcArgs }, function(err){
             if(err){
                 return callback(err); //todo: prevent double callback
             }
@@ -261,6 +262,16 @@ Driver.prototype.findVisibles = function(args, callback){
     }
 
     return this.findVisible(args, callback);
+};
+
+Driver.prototype.$ = function(args, callback){
+    return this.exec({
+        func: function(arg){
+            return $(arg);
+        },
+
+        args: args
+    }, callback);
 };
 
 module.exports = Driver;

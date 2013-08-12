@@ -378,5 +378,14 @@ exports.setup = function(args){
             assert(first);
             assert.equal(first.length, 1);
         });
+
+        tu.it('append', function(){
+            driver.findVisible('body').append('<div class="append-test"></div>');
+
+            var appended = driver.findVisible('.append-test');
+
+            assert(appended);
+            assert.equal(appended.length, 1);
+        });
     });
 };

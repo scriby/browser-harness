@@ -269,16 +269,25 @@
 
     var convertArgument = function(arg){
         if(isElementProxy(arg)){
-            return convertFromElementProxy(arg);
+            return $(convertFromElementProxy(arg));
         } else if(Array.isArray(arg)){
+            var containsElement = false;
+
             //Special case arrays for faster looping
             for(var i = 0; i < arg.length; i++){
                 if(isElementProxy(arg[i])){
                     arg[i] = convertFromElementProxy(arg[i]);
+                    containsElement = true;
+                } else {
+                    arg[i] = convertArgument(arg[i]);
                 }
             }
 
-            return arg;
+            if(containsElement){
+                return $(arg);
+            } else {
+                return arg;
+            }
         } else if(typeof arg === 'object'){
             for(var key in arg){
                 arg[key] = convertArgument(arg[key]);
