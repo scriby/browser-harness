@@ -46,6 +46,8 @@ declare module "browser-harness" {
         findVisibles(selector: string, callback?: (err: Error, elements: ElementProxy) => void): ElementProxy;
         find(selector: string, callback?: (err: Error, elements: ElementProxy) => void): ElementProxy;
 
+        $(content: any, callback?: (err: Error, elements: ElementProxy) => void): ElementProxy;
+
         events: DriverEvents;
     }
 
@@ -115,6 +117,8 @@ declare module "browser-harness" {
         removeData(name: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
 
         filter(selector: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+
+        append(content: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
     }
 
     export class Browser {
