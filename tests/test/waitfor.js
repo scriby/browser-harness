@@ -16,8 +16,6 @@ exports.setup = function(args){
         });
 
         tu.it('waits for a div to appear', function(){
-            var flow = asyncblock.getCurrentFlow();
-
             driver.waitFor({
                 condition: function() {
                     return $('div.test-div').length > 0;
@@ -28,9 +26,7 @@ exports.setup = function(args){
                 },
 
                 timeoutMS: 2000
-            }, flow.add('waitFor'));
-
-            flow.wait('waitFor');
+            });
 
             var div = driver.findVisible('div.test-div');
 
@@ -49,6 +45,38 @@ exports.setup = function(args){
 
             assert(result instanceof Error);
             assert.equal(result.message.indexOf('waitFor condition timed out'), 0);
+        });
+
+        tu.it('passes variables to waitFor', function(){
+            var body = driver.findVisible('body');
+            driver.exec({
+                func: function(){
+                    $('body').append($('<div>test</div>').addClass('test-div-1'));
+                },
+
+                args: body
+            });
+
+            var element = driver.findVisible('.test-div-1');
+
+            driver.waitFor({
+                condition: function(element) {
+                    return element.is(':hidden');
+                },
+
+                exec: function(element){
+                    element.hide();
+                },
+
+                timeoutMS: 2000,
+
+                args: element
+            });
+
+            var div = driver.findElement('div.test-div-1:hidden');
+
+            assert(div);
+            assert.equal(div.length, 1);
         });
     });
 };
