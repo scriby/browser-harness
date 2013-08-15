@@ -27,6 +27,8 @@ exports.setup = function(args){
                     return check.is(':focus') || document.activeElement === check[0]; //is(':focus') doesn't work in phantomjs 1.9
                 },
 
+                inBrowser: true,
+
                 timeoutMS: 200
             });
         });
@@ -42,6 +44,8 @@ exports.setup = function(args){
                     return check.is(':focus') || document.activeElement === check[0]; //is(':focus') doesn't work in phantomjs 1.9
                 },
 
+                inBrowser: true,
+
                 timeoutMS: 200
             });
             check.blur();
@@ -51,6 +55,8 @@ exports.setup = function(args){
                     var check =  $('input[type=checkbox]');
                     return !check.is(':focus') && document.activeElement !== check[0]; //is(':focus') doesn't work in phantomjs 1.9
                 },
+
+                inBrowser: true,
 
                 timeoutMS: 200
             });

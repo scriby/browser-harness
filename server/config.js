@@ -1,2 +1,2 @@
 exports.timeoutMS = 2000;
-exports.retryMS = 100;
+exports.retryMS = 20;

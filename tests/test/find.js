@@ -69,7 +69,7 @@ exports.setup = function(args){
                 driver.findElement('.does-not-exist');
             } catch(e){
                 exceptionOccurred = true;
-                assert.equal(e.message, 'Element ".does-not-exist" not found');
+                assert.equal(e.message, 'Element ".does-not-exist" not found (timeout: 10)');
             }
 
             assert(exceptionOccurred);

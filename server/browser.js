@@ -26,8 +26,13 @@ var _createFirefoxProfile = function(ffLocation, callback){
                 return callback(err);
             }
 
-            if(contents.indexOf('browser.shell.checkDefaultBrowser') < 0){
-                fs.appendFile(prefsLocation, 'user_pref("browser.shell.checkDefaultBrowser", false);', 'utf8', function(err){
+            if(contents.indexOf('browser.shell.checkDefaultBrowser') < 0 || contents.indexOf('toolkit.startup.max_resumed_crashes') < 0) {
+                var configEntries = [
+                    'user_pref("browser.shell.checkDefaultBrowser", false);',
+                    'user_pref("toolkit.startup.max_resumed_crashes", -1);'
+                ].join('\n');
+
+                fs.appendFile(prefsLocation, configEntries, 'utf8', function(err){
                     if(err){
                         return callback(err);
                     }
