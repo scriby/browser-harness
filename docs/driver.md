@@ -167,7 +167,7 @@ async.forEach(
 
 ### waitFor
 
-`void waitFor(condition: function || { condition: function, exec: function, timeoutMS: int, args: any, timeoutError: string }, [callback])`
+`void waitFor(condition: function || { condition: function, exec: function, timeoutMS: int, args: any, timeoutError: string, inBrowser: boolean }, [callback])`
 
 Waits for a condition to be true, then calls its callback. If the timeout period elapses before the condition becomes true,
 an error is returned to the callback.
@@ -179,12 +179,28 @@ make the condition true.
 Additionally, an explicit timeout may be specified for the amount of time to wait before giving up and returning an error.
 Note that the provided condition will be polled until it is true, at a configurable rate.
 
+The function is by default executed "on the server". If "inBrowser: true" is passed, it will be executed in the browser instead.
+
 The callback is not required if using asyncblock to wrap the code.
 
 ```javascript
 asyncblock(function(){
+  driver.waitFor({
+    condition: function(){
+      return location.href.indexOf('test-page.html') >= 0;
+    },
+
+    inBrowser: true
+  });
+}, callback);
+```
+
+```javascript
+asyncblock(function(){
+  var element = driver.findVisible('div:first');
+
   driver.waitFor(function(){
-    return location.href.indexOf('test-page.html') >= 0;
+    return element.hasClass('ready');
   });
 }, callback);
 ```
@@ -198,16 +214,21 @@ asyncblock(function(){
 
     exec: function(){
       $('.test-button').click();
-    }
+    },
+
+    inBrowser: true
   });
 }, callback);
 ```
 
 ```javascript
-driver.waitFor(
-  function(){
-    return location.href.indexOf('test-page.html') >= 0;
-  },
+driver.waitFor({
+    condition: function(){
+      return location.href.indexOf('test-page.html') >= 0;
+    },
+
+    inBrowser: true
+  }
 
   function(err){
     callback(err);

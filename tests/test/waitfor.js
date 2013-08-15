@@ -18,11 +18,11 @@ exports.setup = function(args){
         tu.it('waits for a div to appear', function(){
             driver.waitFor({
                 condition: function() {
-                    return $('div.test-div').length > 0;
+                    return driver.findVisible({ selector: 'div.test-div', timeoutMS: 1000 }).length > 0;
                 },
 
                 exec: function(){
-                    $('body').append($('<div>test</div>').addClass('test-div'));
+                    driver.findVisible('body').append('<div class="test-div">test</div>');
                 },
 
                 timeoutMS: 2000
@@ -71,6 +71,8 @@ exports.setup = function(args){
                 exec: function(element){
                     element.hide();
                 },
+
+                inBrowser: true,
 
                 timeoutMS: 2000,
 

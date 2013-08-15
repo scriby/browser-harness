@@ -17,6 +17,9 @@ exports.setup = function(args){
                 condition: function(){
                     return location.href.indexOf('/transition.html') >= 0;
                 },
+
+                inBrowser: true,
+
                 timeoutMS: 5000
             });
         });

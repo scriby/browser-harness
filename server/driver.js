@@ -84,7 +84,7 @@ Driver.prototype.setUrl = function(url, callback){
 
 Driver.prototype.waitFor = function(args, callback){
     var self = this;
-    var startTime, func, timeout, exec, funcArgs, timeoutError;
+    var startTime, func, timeout, exec, funcArgs, timeoutError, inBrowser;
     if(typeof args === 'object'){
         func = args.condition;
         startTime = args.startTime || new Date();
@@ -92,6 +92,7 @@ Driver.prototype.waitFor = function(args, callback){
         exec = args.exec;
         funcArgs = args.args;
         timeoutError = args.timeoutError;
+        inBrowser = args.inBrowser;
     } else {
         func = args;
         startTime = new Date();
@@ -111,7 +112,7 @@ Driver.prototype.waitFor = function(args, callback){
         throw new Error('callback is required');
     }
 
-    this.exec({ func: func, args: funcArgs }, function(err, result){
+    var _resultHandler = function(err, result){
         if(err){
             return callback(err);
         }
@@ -121,7 +122,17 @@ Driver.prototype.waitFor = function(args, callback){
         } else {
             if(new Date() - startTime < timeout){
                 setTimeout(function(){
-                    self.waitFor({ condition: func, timeoutMS: timeout, startTime: startTime, args: funcArgs, timeoutError: timeoutError }, callback);
+                    //Need to re-create the asyncblock context
+                    (asyncblock || function(fn){ fn(); })(function(){
+                        self.waitFor({
+                            condition: func,
+                            timeoutMS: timeout,
+                            startTime: startTime,
+                            args: funcArgs,
+                            timeoutError: timeoutError,
+                            inBrowser: inBrowser
+                        }, callback);
+                    });
                 }, config.retryMS);
             } else {
                 if(!timeoutError) {
@@ -131,29 +142,52 @@ Driver.prototype.waitFor = function(args, callback){
                 }
             }
         }
-    });
+    };
 
-    if(exec){
-        this.exec({ func: exec, args: funcArgs }, function(err){
-            if(err){
-                return callback(err); //todo: prevent double callback
-            }
+    if(inBrowser){
+        this.exec({ func: func, args: funcArgs }, _resultHandler);
+
+        if(exec){
+            this.exec({ func: exec, args: funcArgs }, function(err){
+                if(err){
+                    return callback(err); //todo: prevent double callback
+                }
+            });
+        }
+    } else {
+        //This exec needs to occur "out-of-process" or it'll block waiting on the condition when asyncblock is in use
+        process.nextTick(function(){
+            (asyncblock || function(fn){ fn(); })(function(){
+                if(exec){
+                    exec();
+                }
+            });
         });
+
+        if(func.length === 1){
+            func(_resultHandler);
+        } else if(func.length === 0){
+            _resultHandler(null, func());
+        } else {
+            throw new Error('func must take 0 arguments, or a callback');
+        }
     }
 };
 
 Driver.prototype.findElement = function(args, callback){
     var self = this;
-    var startTime, selector, context, multi;
+    var startTime, selector, context, multi, timeoutMS;
     if(typeof args === 'object'){
         selector = args.selector;
         startTime = args.startTime || new Date();
         context = args.context;
         multi = args.multi;
+        timeoutMS = args.timeoutMS || config.timeoutMS;
     } else {
         selector = args;
         startTime = new Date();
         multi = false;
+        timeoutMS = config.timeoutMS;
     }
 
     //Use asyncblock fibers if it is available
@@ -183,15 +217,15 @@ Driver.prototype.findElement = function(args, callback){
         if(element && (element.length === 1 || (multi && element.length > 0))) {
            callback(null, element);
         } else {
-            if(new Date() - startTime < config.timeoutMS){
+            if(new Date() - startTime < timeoutMS){
                 setTimeout(function(){
-                   self.findElement({ selector: selector, context: context, startTime: startTime, multi: multi }, callback);
+                   self.findElement({ selector: selector, context: context, startTime: startTime, multi: multi, timeoutMS: timeoutMS }, callback);
                 }, config.retryMS);
             } else {
                 if(element && element.length > 1){
                     return callback(new Error('Element "' + selector + '" found, but there were too many instances (' + element.length + ')'));
                 } else {
-                    return callback(new Error('Element "' + selector + '" not found'));
+                    return callback(new Error('Element "' + selector + '" not found (timeout: ' + timeoutMS + ')'));
                 }
             }
         }
