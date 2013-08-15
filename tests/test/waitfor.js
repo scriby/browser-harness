@@ -37,14 +37,18 @@ exports.setup = function(args){
         tu.it('times out if the condition is not met', function(){
             var flow = asyncblock.getCurrentFlow();
 
-            driver.waitFor(function(){
-                return false;
+            driver.waitFor({
+                condition: function(){
+                    return false;
+                },
+
+                timeoutError: 'test error'
             }, flow.add({ key: 'waitFor', ignoreError: true }));
 
             var result = flow.wait('waitFor');
 
             assert(result instanceof Error);
-            assert.equal(result.message.indexOf('waitFor condition timed out'), 0);
+            assert.equal('waitFor condition timed out (10): test error', result.message);
         });
 
         tu.it('passes variables to waitFor', function(){

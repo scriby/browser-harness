@@ -36,7 +36,7 @@ declare module "browser-harness" {
 
         setUrl(url: string, callback?: Function);
 
-        waitFor(args: { condition: Function; exec?: Function; timeoutMS?: number }, callback?: Function);
+        waitFor(args: { condition: Function; exec?: Function; timeoutMS?: number; args?: any; timeoutError?: string; }, callback?: Function);
         waitFor(condition: Function, callback?: Function);
 
         findElement(selector: string, callback?: (err: Error, element: ElementProxy) => void): ElementProxy;

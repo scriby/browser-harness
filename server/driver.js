@@ -84,13 +84,14 @@ Driver.prototype.setUrl = function(url, callback){
 
 Driver.prototype.waitFor = function(args, callback){
     var self = this;
-    var startTime, func, timeout, exec, funcArgs;
+    var startTime, func, timeout, exec, funcArgs, timeoutError;
     if(typeof args === 'object'){
         func = args.condition;
         startTime = args.startTime || new Date();
         timeout = args.timeoutMS || config.timeoutMS;
         exec = args.exec;
         funcArgs = args.args;
+        timeoutError = args.timeoutError;
     } else {
         func = args;
         startTime = new Date();
@@ -120,10 +121,14 @@ Driver.prototype.waitFor = function(args, callback){
         } else {
             if(new Date() - startTime < timeout){
                 setTimeout(function(){
-                    self.waitFor({ condition: func, timeoutMS: timeout, startTime: startTime, args: funcArgs }, callback);
+                    self.waitFor({ condition: func, timeoutMS: timeout, startTime: startTime, args: funcArgs, timeoutError: timeoutError }, callback);
                 }, config.retryMS);
             } else {
-                return callback(new Error('waitFor condition timed out (' + timeout + '): "' + func.toString()));
+                if(!timeoutError) {
+                    return callback(new Error('waitFor condition timed out (' + timeout + '): ' + func.toString()));
+                } else {
+                    return callback(new Error('waitFor condition timed out (' + timeout + '): ' + timeoutError));
+                }
             }
         }
     });

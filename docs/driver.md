@@ -167,7 +167,7 @@ async.forEach(
 
 ### waitFor
 
-`void waitFor(condition: function || { condition: function, exec: function, timeoutMS: int }, [callback])`
+`void waitFor(condition: function || { condition: function, exec: function, timeoutMS: int, args: any, timeoutError: string }, [callback])`
 
 Waits for a condition to be true, then calls its callback. If the timeout period elapses before the condition becomes true,
 an error is returned to the callback.
