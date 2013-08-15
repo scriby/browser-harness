@@ -102,12 +102,18 @@ exports.setup = function(args){
             async.waterfall([
                 function(callback){
                     driver.waitFor({
-                        condition: function() {
-                            return $('div.waitfor-test-div').length > 0;
+                        condition: function(callback) {
+                            driver.findVisible('div.waitfor-test-div', function(err, element){
+                                return callback(err, element.length === 1);
+                            });
                         },
 
                         exec: function(){
-                            $('body').append($('<div>test</div>').addClass('waitfor-test-div'));
+                            driver.findVisible('body', function(err, body){
+                                if(err){ throw err }
+
+                                body.append('<div class="waitfor-test-div">test</div>');
+                            });
                         },
 
                         timeoutMS: 2000

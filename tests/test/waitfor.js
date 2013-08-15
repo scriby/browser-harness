@@ -18,11 +18,11 @@ exports.setup = function(args){
         tu.it('waits for a div to appear', function(){
             driver.waitFor({
                 condition: function() {
-                    return $('div.test-div').length > 0;
+                    return driver.findVisible({ selector: 'div.test-div', timeoutMS: 1000 }).length > 0;
                 },
 
                 exec: function(){
-                    $('body').append($('<div>test</div>').addClass('test-div'));
+                    driver.findVisible('body').append('<div class="test-div">test</div>');
                 },
 
                 timeoutMS: 2000
@@ -37,14 +37,18 @@ exports.setup = function(args){
         tu.it('times out if the condition is not met', function(){
             var flow = asyncblock.getCurrentFlow();
 
-            driver.waitFor(function(){
-                return false;
+            driver.waitFor({
+                condition: function(){
+                    return false;
+                },
+
+                timeoutError: 'test error'
             }, flow.add({ key: 'waitFor', ignoreError: true }));
 
             var result = flow.wait('waitFor');
 
             assert(result instanceof Error);
-            assert.equal(result.message.indexOf('waitFor condition timed out'), 0);
+            assert.equal('waitFor condition timed out (10): test error', result.message);
         });
 
         tu.it('passes variables to waitFor', function(){
@@ -67,6 +71,8 @@ exports.setup = function(args){
                 exec: function(element){
                     element.hide();
                 },
+
+                inBrowser: true,
 
                 timeoutMS: 2000,
 

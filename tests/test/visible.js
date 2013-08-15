@@ -95,5 +95,11 @@ exports.setup = function(args){
         tu.it('.test-div-4 cannot be selected with findVisible', function(){
             ensureHidden('.test-div-4');
         });
+
+        tu.it('.multi can be selected with findVisible', function(){
+            var multi = driver.findVisible('.multi');
+
+            assert(multi.length === 1);
+        });
     });
 };
