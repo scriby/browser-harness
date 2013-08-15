@@ -225,11 +225,13 @@ var _isVisible = function(element, selector, startTime, callback){
 };
 
 Driver.prototype.findVisible = function(args, callback){
-    var selector;
+    var selector, multi;
+
     if(typeof args === 'object'){
         selector = args.selector;
+        multi = args.multi;
     } else {
-        args = { selector: args, multi: false };
+        args = { selector: args };
     }
 
     //Use asyncblock fibers if it is available
@@ -245,12 +247,22 @@ Driver.prototype.findVisible = function(args, callback){
         throw new Error('callback is required');
     }
 
-    this.findElement(args, function(err, element){
+    this.findElements(args, function(err, element){
         if(err){
             return callback(err);
         }
 
-        _isVisible(element, selector, new Date(), callback);
+        _isVisible(element, selector, new Date(), function(err, visibles){
+            if(err){
+                return callback(err);
+            }
+
+            if(!multi && visibles.length > 1){
+                return callback(new Error('Element "' + selector + '" found, but there were too many visible instances (' + visibles.length + ')'));
+            }
+
+            return callback(null, visibles);
+        });
     });
 };
 
