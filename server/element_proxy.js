@@ -300,4 +300,52 @@ ElementProxy.prototype.filter = function(selector, callback){
     return this._exec({ func: 'filter', args: arguments });
 };
 
+var handleError = function(err, callback) {
+    if (callback) {
+        return callback(err);
+    }
+};
+
+ElementProxy.prototype.selectByText = function(text, callback) {
+    return this.find('option', function(err, result) {
+        if (err) {
+            return handleError(err, callback);
+        }
+
+        var iterate = function(el) {
+            if (!el || !el.length) {
+                if (callback) {
+                    return callback();
+                }
+            }
+
+            return el.text(function(err, result) {
+                if (err) {
+                    return handleError(err, callback);
+                }
+
+                if (result === text) {
+                    return el.prop('selected', true, callback);
+                } else {
+                    return el.next(function(err, result) {
+                        if (err) {
+                            return handleError(err, callback);
+                        }
+
+                        return iterate(result);
+                    });
+                }
+            });
+        };
+
+        return result.first(function(err, result) {
+            if (err) {
+                return handleError(err, callback);
+            }
+
+            return iterate(result);
+        });
+    });
+};
+
 module.exports = ElementProxy;
