@@ -348,4 +348,24 @@ ElementProxy.prototype.selectByText = function(text, callback) {
     });
 };
 
+ElementProxy.prototype.setText = function(text, callback) {
+    // focus the current element
+    return this.focus(function(err, result) {
+        if (err) {
+            return handleError(err, callback);
+        }
+
+        // set the element value
+        result.val(text, function(err, result) {
+            if (err) {
+                return handleError(err, callback);
+            }
+
+            // blur the element to trigger any events that may happen when text is entered
+            return result.blur(callback);
+        });
+    });
+};
+
+
 module.exports = ElementProxy;
