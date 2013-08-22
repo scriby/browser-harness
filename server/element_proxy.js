@@ -369,9 +369,8 @@ ElementProxy.prototype.setText = function(text, callback) {
             return result.blur(function(err, result) {
                 if (err) { return callback(err); }
 
-                return result.change(function(err, result) {
-                    setTimeout(function() { return callback(err, result); }, 0);
-                });
+                // manually fire the change event (needed for knockout support)
+                return result.change(callback);
             });
         });
     });
