@@ -33,7 +33,7 @@ exports.getDriver = function(callback){
 };
 
 exports.open = function(){
-    _browser = new harness.Browser({ type: 'phantomjs' });
+    _browser = new harness.Browser({ type: process.env['BROWSER'] || 'phantomjs' });
     _browser.open('http://localhost:4501/harness.html');
 };
 
