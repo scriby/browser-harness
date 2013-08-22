@@ -119,6 +119,10 @@ declare module "browser-harness" {
         filter(selector: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
 
         append(content: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+
+        selectByText(text: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        setText(text: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        change(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy 
     }
 
     export class Browser {

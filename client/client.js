@@ -269,7 +269,7 @@
 
     var convertArgument = function(arg){
         if(isElementProxy(arg)){
-            return $(convertFromElementProxy(arg));
+            return testFrame.contentWindow.$(convertFromElementProxy(arg));
         } else if(Array.isArray(arg)){
             var containsElement = false;
 
@@ -284,7 +284,7 @@
             }
 
             if(containsElement){
-                return $(arg);
+                return testFrame.contentWindow.$(arg);
             } else {
                 return arg;
             }

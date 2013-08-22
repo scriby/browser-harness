@@ -1,3 +1,6 @@
+//Use asyncblock to manage flow control if it's available
+var asyncblock = process.__asyncblock_included__;
+
 var ElementProxy = function(driver){
     this.driver = driver;
     this.isElementProxy = true;
@@ -48,7 +51,6 @@ ElementProxy.prototype._exec = function(args, callback){
 
                 var elements = args.elements;
                 result = elements[args.func].apply(elements, args.funcArgs);
-
                 return result;
             },
 
@@ -299,5 +301,80 @@ ElementProxy.prototype.append = function(content, callback){
 ElementProxy.prototype.filter = function(selector, callback){
     return this._exec({ func: 'filter', args: arguments });
 };
+
+ElementProxy.prototype.selectByText = function(text, callback) {
+    //Use asyncblock fibers if it is available
+    if(asyncblock && callback == null){
+        var flow = asyncblock.getCurrentFlow();
+
+        if(flow){
+            return flow.sync( this.setText(text, flow.add()) );
+        }
+    }
+
+    return this.find('option', function(err, result) {
+        if (err) { return callback(err); }
+
+        var iterate = function(el) {
+            if (!el || !el.length) {
+                return callback();
+            }
+
+            return el.text(function(err, result) {
+                if (err) { return callback(err); }
+
+                if (result === text) {
+                    return el.prop('selected', true, callback);
+                } else {
+                    return el.next(function(err, result) {
+                        if (err) { return callback(err); }
+
+                        return iterate(result);
+                    });
+                }
+            });
+        };
+
+        return result.first(function(err, result) {
+            if (err) { return callback(err); }
+
+            return iterate(result);
+        });
+    });
+};
+
+ElementProxy.prototype.change = function(callback) {
+    return this._exec({ func: 'change', args: arguments });
+};
+
+ElementProxy.prototype.setText = function(text, callback) {
+    //Use asyncblock fibers if it is available
+    if(asyncblock && callback == null){
+        var flow = asyncblock.getCurrentFlow();
+
+        if(flow){
+            return flow.sync( this.setText(text, flow.add()) );
+        }
+    }
+
+    // focus the current element
+    return this.focus(function(err, result) {
+        if (err) { return callback(err); }
+
+        // set the element value
+        return result.val(text, function(err, result) {
+            if (err) { return callback(err); }
+
+            // blur the element to trigger any events that may happen when text is entered
+            return result.blur(function(err, result) {
+                if (err) { return callback(err); }
+
+                // manually fire the change event (needed for knockout support)
+                return result.change(callback);
+            });
+        });
+    });
+};
+
 
 module.exports = ElementProxy;

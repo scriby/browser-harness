@@ -34,6 +34,7 @@ describe('', function(){
     require('./test/jquery.js').setup(args);
     require('./test/transition.js').setup(args);
     require('./test/no-fibers.js').setup(args);
+    require('./test/knockout.js').setup(args);
 
     after(function(){
         testBrowser.close();
