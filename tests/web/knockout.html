@@ -1,0 +1,27 @@
+<html>
+    <body>
+        <input type="text" id="first" data-bind="value: theValue" />
+        <input type="text" id="second" data-bind="value: theValue" />
+        <input type="text" id="changable" data-bind="value: changableValue" />
+        <input type="text" id="status" />
+
+        <script type="text/javascript">
+            document.write('<scr' + 'ipt type="text/javascript" src="' + parent.window.harnessHost + '/vendor/jquery.js"></scr' + 'ipt>');
+            document.write('<scr' + 'ipt type="text/javascript" src="' + parent.window.harnessHost + '/vendor/knockout-2.3.0.js"></scr' + 'ipt>');
+        </script>
+        <script type="text/javascript">
+            (function($) {
+                $('#changable').change(function() {
+                    $('#status').val('changed');
+                });
+
+                var viewModel = {
+                    theValue: ko.observable('initialVal'),
+                    changableValue: ko.observable('changableValue')
+                };
+
+                ko.applyBindings(viewModel, $('body')[0]);
+            })(jQuery);
+        </script>
+    </body>
+</html>
