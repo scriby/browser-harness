@@ -376,5 +376,27 @@ ElementProxy.prototype.setText = function(text, callback) {
     });
 };
 
+ElementProxy.prototype.sendEnterKey = function(callback) {
+    //Use asyncblock fibers if it is available
+    if(asyncblock && callback == null){
+        var flow = asyncblock.getCurrentFlow();
+
+        if(flow){
+            return flow.sync( this.sendEnterKey(flow.add()) );
+        }
+    }
+
+    var self = this;
+    return this.driver.exec({
+        func: function(el) {
+            var evt = $.Event('keypress');
+            evt.which = evt.keyCode = 13; // the key code for the enter key
+            el.trigger(evt);
+        },
+        args: this
+    }, function(err) {
+        return callback(err, self);
+    });
+};
 
 module.exports = ElementProxy;
