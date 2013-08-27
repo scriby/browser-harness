@@ -51,20 +51,30 @@ declare module "browser-harness" {
         events: DriverEvents;
     }
 
+    export interface TopLeft {
+        top: number;
+        left: number;
+    }
+
     export interface ElementProxy {
         length: number;
 
         click(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         focus(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         blur(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        val(callback?: (err: Error, value: string) => void) : string
         val(value?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
-        attr(name: string, value?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        attr(name: string, callback?: (err: Error, value: string) => void) : string
+        attr(name: string, value: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         removeAttr(name: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        prop(name: string, callback?: (err: Error, value: string) => void) : string
         prop(name: string, value?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         removeProp(name: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        html(callback?: (err: Error, value: string) => void) : string
         html(value?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        text(callback?: (err: Error, value: string) => void) : string
         text(value?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
-        hasClass(className: string, callback?: (err: Error, element: ElementProxy) => void) : boolean
+        hasClass(className: string, callback?: (err: Error, value: boolean) => void) : boolean
         addClass(className: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         removeClass(className: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         toggleClass(className: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
@@ -72,16 +82,26 @@ declare module "browser-harness" {
         trigger(event: string, extraParameters?: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         triggerHandler(event: string, extraParameters?: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
 
+        css(name: string, callback?: (err: Error, value: string) => void) : string
         css(name: string, value?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        height(callback?: (err: Error, value: number) => void) : number
         height(value?: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        innerHeight(callback?: (err: Error, value: number) => void) : number
         innerHeight(value?: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        outerHeight(callback?: (err: Error, value: number) => void) : number
         outerHeight(value?: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        width(callback?: (err: Error, value: number) => void) : number
         width(value?: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        innerWidth(callback?: (err: Error, value: number) => void) : number
         innerWidth(value?: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        outerWidth(callback?: (err: Error, value: number) => void) : number
         outerWidth(value?: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        offset(callback?: (err: Error, value: TopLeft) => void) : TopLeft
         offset(value?: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
-        position(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        position(callback?: (err: Error, value: TopLeft) => void) : TopLeft
+        scrollLeft(callback?: (err: Error, value: number) => void) : number
         scrollLeft(value?: number, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        scrollTop(callback?: (err: Error, value: number) => void) : number
         scrollTop(value?: number, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
 
         hide(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
@@ -113,6 +133,7 @@ declare module "browser-harness" {
         prevUntil(selector?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         siblings(selector?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
 
+        data(name: string, callback?: (err: Error, value: any) => void) : any
         data(name: string, value?: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         removeData(name: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
 
@@ -122,7 +143,7 @@ declare module "browser-harness" {
 
         selectByText(text: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         setText(text: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
-        change(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy 
+        change(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         sendEnterKey(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
     }
 
