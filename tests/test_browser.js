@@ -37,6 +37,10 @@ exports.open = function(){
     _browser.open('http://localhost:4501/harness.html');
 };
 
+exports.reset = function(){
+    _driver = null;
+};
+
 exports.close = function(){
     _browser.close();
 };

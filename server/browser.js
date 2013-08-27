@@ -3,6 +3,7 @@ var fs = require('fs');
 
 //Use asyncblock to manage flow control if it's available
 var asyncblock = process.__asyncblock_included__;
+var utility = require('./utility');
 
 var Browser = function(config){
     if(config == null || config.type == null){
@@ -14,7 +15,7 @@ var Browser = function(config){
 
 var _createFirefoxProfile = function(ffLocation, callback){
     var profileLocation = '/tmp/ffprofile/browser-harness';
-    child_process.exec(ffLocation + ' -CreateProfile "harness ' + profileLocation + '"', function(err, stdout, stderr){
+    child_process.exec(ffLocation + ' -CreateProfile "harness ' + profileLocation + '"', function(err/*, stdout, stderr*/){
         if(err){
             return callback(err);
         }
@@ -119,24 +120,14 @@ Browser.prototype._open = function(location, harnessUrl, args){
 Browser.prototype.open = function(harnessUrl, serverUrl){
     var self = this;
 
-    if(harnessUrl == null){
-        throw new Error('harnessUrl is required');
-    }
+    harnessUrl = utility.constructHarnessUrl(harnessUrl, serverUrl);
 
     var defaultConfig = _defaultConfig[process.platform][this.config.type];
     var location = this.config.location || defaultConfig.location;
     var args = this.config.args || defaultConfig.args;
 
-    if(serverUrl){
-        if(serverUrl.indexOf('://')){
-            serverUrl = 'http://' + serverUrl;
-        }
-
-        harnessUrl += '?host=' + encodeURIComponent(serverUrl);
-    }
-
     if(this.config.type === 'firefox'){
-        _createFirefoxProfile(location, function(err, profile){
+        _createFirefoxProfile(location, function(err){
             if(err){
                 console.log(err);
             } else {
