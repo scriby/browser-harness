@@ -6,6 +6,7 @@ var config = require('./config.js');
 var asyncblock = process.__asyncblock_included__;
 
 var ElementProxy = require('./element_proxy.js');
+var utility = require('./utility.js');
 
 var Driver = function(now){
     this.now = now;
@@ -80,6 +81,14 @@ Driver.prototype.setUrl = function(url, callback){
     }
 
     this.now.setUrl(url, callback);
+};
+
+Driver.prototype.reuseBrowser = function(harnessUrl, serverUrl){
+    if(harnessUrl){
+        harnessUrl = utility.constructHarnessUrl(harnessUrl, serverUrl);
+    }
+
+    this.now.reuseBrowser(harnessUrl);
 };
 
 Driver.prototype.waitFor = function(args, callback){

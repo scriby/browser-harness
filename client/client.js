@@ -219,6 +219,14 @@
         }
     };
 
+    now.reuseBrowser = function(harnessUrl){
+        if(harnessUrl){
+            location.replace(harnessUrl);
+        } else {
+            location.replace(location.href);
+        }
+    };
+
     now.ready(function(){
         //Fetch the contents of the jQuery script directly so we can inject it into the iframe synchronously if it doesn't have jQuery
         now.getJqueryScriptText(function(err, contents){
@@ -257,14 +265,6 @@
 
     var convertFromElementProxy = function(obj){
         return _elementCache[obj.id];
-    };
-
-    var convertReturnValue = function(result){
-        if(isDomElement(result)){
-            return convertFromDomElement(result);
-        } else {
-            return result;
-        }
     };
 
     var convertArgument = function(arg){
