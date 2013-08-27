@@ -50,7 +50,7 @@ var _defaultConfig = {
     darwin: {
         chrome: {
             location: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-            args: [ '*URL*', '--user-data-dir=/tmp/*RANDOM*', '-incognito', '--disable-prompt-on-repost', '--no-default-browser-check', '--no-first-run', '--disable-background-networking', '--disable-sync', '--disable-translate', '--disable-web-resources', '--safebrowsing-disable-auto-update', '--safebrowsing-disable-download-protection', '--disable-client-side-phishing-detection', '--disable-component-update', '--disable-default-apps', '--use-mock-keychain', '--ignore-certificate-errors']
+            args: [ '*URL*', '--user-data-dir=/tmp/*RANDOM*', '-incognito', '--disable-prompt-on-repost', '--no-default-browser-check', '--no-first-run', '--disable-background-networking', '--disable-sync', '--disable-translate', '--disable-web-resources', '--safebrowsing-disable-auto-update', '--safebrowsing-disable-download-protection', '--disable-client-side-phishing-detection', '--disable-component-update', '--disable-default-apps', '--use-mock-keychain', '--ignore-certificate-errors', '-disable-popup-blocking']
         },
 
         firefox: {
@@ -72,7 +72,7 @@ var _defaultConfig = {
     linux: {
         chrome: {
             location: 'chromium-browser',
-            args: [ '*URL*', '--user-data-dir=/tmp/*RANDOM*', '-incognito', '--disable-prompt-on-repost', '--no-default-browser-check', '--no-first-run', '--disable-background-networking', '--disable-sync', '--disable-translate', '--disable-web-resources', '--safebrowsing-disable-auto-update', '--safebrowsing-disable-download-protection', '--disable-client-side-phishing-detection', '--disable-component-update', '--disable-default-apps', '--use-mock-keychain', '--ignore-certificate-errors']
+            args: [ '*URL*', '--user-data-dir=/tmp/*RANDOM*', '-incognito', '--disable-prompt-on-repost', '--no-default-browser-check', '--no-first-run', '--disable-background-networking', '--disable-sync', '--disable-translate', '--disable-web-resources', '--safebrowsing-disable-auto-update', '--safebrowsing-disable-download-protection', '--disable-client-side-phishing-detection', '--disable-component-update', '--disable-default-apps', '--use-mock-keychain', '--ignore-certificate-errors', '-disable-popup-blocking']
         },
 
         firefox: {
