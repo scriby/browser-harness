@@ -68,7 +68,7 @@ declare module "browser-harness" {
         attr(name: string, callback?: (err: Error, value: string) => void) : string
         attr(name: string, value: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         removeAttr(name: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
-        prop(name: string, callback?: (err: Error, value: string) => void) : string
+        prop(name: string, callback?: (err: Error, value: string) => void) : any
         prop(name: string, value?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         removeProp(name: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         html(callback?: (err: Error, value: string) => void) : string
