@@ -31,7 +31,7 @@ declare module "browser-harness" {
     }
 
     export interface Driver {
-        exec(args: { func: Function; args?: any[]}, callback?: Function) : any;
+        exec(args: { func: Function; args?: any}, callback?: Function) : any;
         exec(func: Function, callback?: Function) : any;
 
         setUrl(url: string, callback?: Function);

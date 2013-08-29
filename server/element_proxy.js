@@ -361,16 +361,25 @@ ElementProxy.prototype.setText = function(text, callback) {
     return this.focus(function(err, result) {
         if (err) { return callback(err); }
 
-        // set the element value
-        return result.val(text, function(err, result) {
+        if (result.is('input[type=text], textarea'), function(err, isTextField) {
             if (err) { return callback(err); }
 
-            // blur the element to trigger any events that may happen when text is entered
-            return result.blur(function(err, result) {
+            var setter = 'text';
+            if (isTextField) {
+                setter = 'val'
+            }
+
+            // set the element value
+            return result.[setter](text, function(err, result) {
                 if (err) { return callback(err); }
 
-                // manually fire the change event (needed for knockout support)
-                return result.change(callback);
+                // blur the element to trigger any events that may happen when text is entered
+                return result.blur(function(err, result) {
+                    if (err) { return callback(err); }
+
+                    // manually fire the change event (needed for knockout support)
+                    return result.change(callback);
+                });
             });
         });
     });
