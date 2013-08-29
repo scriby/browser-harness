@@ -1,10 +1,10 @@
 {
-    "name": "browser-harness",
-    "version": "0.0.13",
-    "repository": "https://github.com/scriby/browser-harness.git",
-    "main": "server/harness.js",
-    "dependencies": {
-        "now": "0.8.1",
-        "express": "3.3.4"
-    }
+  "name": "browser-harness",
+  "version": "0.0.14",
+  "repository": "https://github.com/scriby/browser-harness.git",
+  "main": "server/harness.js",
+  "dependencies": {
+    "now": "0.8.1",
+    "express": "3.3.4"
+  }
 }
