@@ -370,7 +370,7 @@ ElementProxy.prototype.setText = function(text, callback) {
             }
 
             // set the element value
-            return result.[setter](text, function(err, result) {
+            return result[setter](text, function(err, result) {
                 if (err) { return callback(err); }
 
                 // blur the element to trigger any events that may happen when text is entered
