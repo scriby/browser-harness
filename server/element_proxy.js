@@ -361,7 +361,7 @@ ElementProxy.prototype.setText = function(text, callback) {
     return this.focus(function(err, result) {
         if (err) { return callback(err); }
 
-        if (result.is('input[type=text], textarea'), function(err, isTextField) {
+        result.is('input[type=text], textarea', function(err, isTextField) {
             if (err) { return callback(err); }
 
             var setter = 'text';
