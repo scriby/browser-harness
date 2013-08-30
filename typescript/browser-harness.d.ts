@@ -110,7 +110,7 @@ declare module "browser-harness" {
         toggle(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
 
         children(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
-        closest(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        closest(selector: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         contents(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         find(selector: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         findElements(selector: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy

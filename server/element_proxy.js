@@ -191,7 +191,7 @@ ElementProxy.prototype.children = function(callback){
     return this._exec({ func: 'children', args: arguments });
 };
 
-ElementProxy.prototype.closest = function(callback){
+ElementProxy.prototype.closest = function(selector, callback){
     return this._exec({ func: 'closest', args: arguments });
 };
 
