@@ -1,4 +1,89 @@
 (function(){
+    var WindowManager = (function(){
+        var WindowManager = function(){
+            this.cache = {};
+            this.lastPopupWindow = null;
+        };
+
+        WindowManager.prototype.patch = function(window){
+            if(window.open.__harness_patched__){
+                return;
+            }
+
+            var self = this;
+
+            var oldOpen = window.open;
+            window.open = function(){
+                var handle = oldOpen.apply(this, arguments);
+
+                self.lastPopupWindow = handle;
+                self.serialize(handle);
+
+                return handle;
+            };
+
+            window.open.__harness_patched__ = true;
+        };
+
+        WindowManager.prototype.getPopupByTitle = function(title){
+            var self = this;
+            var matches = [];
+
+            Object.keys(this.cache).forEach(function(id){
+                var win = self.cache[id];
+
+                if(win.closed){
+                    delete self.cache[id];
+                    return;
+                }
+
+                if(win.document.title === title){
+                    matches.push(win);
+                }
+            });
+
+            return matches;
+        };
+
+        WindowManager.prototype.getLastPopupWindow = function(){
+            return this.serialize(this.lastPopupWindow);
+        };
+
+        WindowManager.prototype.getFrame = function($element){
+            return this.serialize($element[0].contentWindow);
+        };
+
+        WindowManager.prototype.serialize = function(window){
+            if(window == null){
+                return window;
+            }
+
+            if(window.__id__ == null){
+                window.__id__ = Math.random();
+                this.cache[window.__id__] = window;
+            }
+
+            return {
+                isWindowProxy: true,
+                id: window.__id__
+            };
+        };
+
+        WindowManager.prototype.deserialize = function(windowProxy){
+            if(windowProxy == null){
+                return windowProxy;
+            }
+
+            return this.cache[windowProxy.id];
+        };
+
+        WindowManager.prototype.getById = function(id){
+            return this.cache[id];
+        };
+
+        return new WindowManager();
+    })();
+
     var _jQueryScriptText;
     var testFrame = document.getElementById('testFrame');
 
@@ -89,6 +174,7 @@
 
     patchErrorHandler(window);
     patchTestFrameErrorHandler();
+    WindowManager.patch(testFrame.contentWindow);
 
     var patchJQueryExtensions = function($){
         if($ && $.fn && !$.fn._isVisible){
@@ -120,6 +206,8 @@
     };
 
     var exec = function(args, callback){
+        var focusedWindow = args.focusedWindow;
+
         var hasCallback = false;
         var match = /^function\s*\(([^\)]*)\)/.exec(args.func);
         var funcArgs;
@@ -145,30 +233,31 @@
 
         var func;
         if(funcArgs.length === 0){
-            func = new testFrame.contentWindow.Function(funcText);
+            func = new focusedWindow.Function(funcText);
         } else if(funcArgs.length === 1){
-            func = new testFrame.contentWindow.Function(funcArgs[0], funcText);
+            func = new focusedWindow.Function(funcArgs[0], funcText);
         } else if(funcArgs.length === 2){
-            func = new testFrame.contentWindow.Function(funcArgs[0], funcArgs[1], funcText);
+            func = new focusedWindow.Function(funcArgs[0], funcArgs[1], funcText);
         }
 
+        WindowManager.patch(focusedWindow);
         patchJQueryExtensions($);
-        patchJQueryExtensions(testFrame.contentWindow.$);
+        patchJQueryExtensions(focusedWindow.$);
 
-        if(testFrame.contentWindow.$.prototype.toJSON == null){
-            testFrame.contentWindow.$.prototype.toJSON = $.prototype.toJSON;
+        if(focusedWindow.$.prototype.toJSON == null){
+            focusedWindow.$.prototype.toJSON = $.prototype.toJSON;
         }
 
-        patchElementToJson(testFrame.contentWindow);
+        patchElementToJson(focusedWindow);
         if(hasCallback){
             if(args.args){
-                func(convertArgument(args.args), callback);
+                func(convertArgument(args.args, focusedWindow), callback);
             } else {
                 func(callback);
             }
         } else {
             try{
-                var result = func(convertArgument(args.args));
+                var result = func(convertArgument(args.args, focusedWindow));
 
                 callback(null, result);
             } catch(e){
@@ -178,9 +267,11 @@
     };
 
     now.exec = function(args, callback){
-        if(testFrame.contentWindow.$ == null){
+        args.focusedWindow = WindowManager.deserialize(args.focusedWindow) || testFrame.contentWindow;
+
+        if(args.focusedWindow.$ == null){
             try{
-                testFrame.contentWindow.eval(_jQueryScriptText);
+                args.focusedWindow.eval(_jQueryScriptText);
             } catch(e){
                 //This is a workaround for Firefox. It was having problems with evaluating the jQuery script when the
                 //frame was transitioning between pages. I couldn't figure out a way to detect whether this would error
@@ -227,6 +318,10 @@
         }
     };
 
+    now.getLastPopupWindow = function(callback){
+        return callback(null, WindowManager.getLastPopupWindow());
+    };
+
     now.ready(function(){
         //Fetch the contents of the jQuery script directly so we can inject it into the iframe synchronously if it doesn't have jQuery
         now.getJqueryScriptText(function(err, contents){
@@ -267,9 +362,9 @@
         return _elementCache[obj.id];
     };
 
-    var convertArgument = function(arg){
+    var convertArgument = function(arg, focusedWindow){
         if(isElementProxy(arg)){
-            return testFrame.contentWindow.$(convertFromElementProxy(arg));
+            return focusedWindow.$(convertFromElementProxy(arg));
         } else if(Array.isArray(arg)){
             var containsElement = false;
 
@@ -279,18 +374,18 @@
                     arg[i] = convertFromElementProxy(arg[i]);
                     containsElement = true;
                 } else {
-                    arg[i] = convertArgument(arg[i]);
+                    arg[i] = convertArgument(arg[i], focusedWindow);
                 }
             }
 
             if(containsElement){
-                return testFrame.contentWindow.$(arg);
+                return focusedWindow.$(arg);
             } else {
                 return arg;
             }
         } else if(typeof arg === 'object'){
             for(var key in arg){
-                arg[key] = convertArgument(arg[key]);
+                arg[key] = convertArgument(arg[key], focusedWindow);
             }
 
             return arg;

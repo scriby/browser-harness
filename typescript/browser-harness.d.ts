@@ -9,36 +9,36 @@ declare module "browser-harness" {
     import events = require("events");
 
     interface HarnessEvents extends events.NodeEventEmitter {
-        once(event: string, listener: (driver: Driver) => void);
-        once(event: 'ready', listener: (driver: Driver) => void);
+        once(event: string, listener: (driver: Driver) => void): void;
+        once(event: 'ready', listener: (driver: Driver) => void): void;
 
-        on(event: string, listener: (driver: Driver) => void);
-        on(event: 'ready', listener: (driver: Driver) => void);
+        on(event: string, listener: (driver: Driver) => void): void;
+        on(event: 'ready', listener: (driver: Driver) => void): void;
     }
 
     interface DriverEvents extends events.NodeEventEmitter {
-        once(event: string, listener: (text: string) => void);
-        once(event: 'console.log', listener: (text: string) => void);
-        once(event: 'console.warn', listener: (text: string) => void);
-        once(event: 'console.error', listener: (text: string) => void);
-        once(event: 'window.onerror', listener: (text: string) => void);
+        once(event: string, listener: (text: string) => void): void;
+        once(event: 'console.log', listener: (text: string) => void): void;
+        once(event: 'console.warn', listener: (text: string) => void): void;
+        once(event: 'console.error', listener: (text: string) => void): void;
+        once(event: 'window.onerror', listener: (text: string) => void): void;
 
-        on(event: string, listener: (text: string) => void);
-        on(event: 'console.log', listener: (text: string) => void);
-        on(event: 'console.warn', listener: (text: string) => void);
-        on(event: 'console.error', listener: (text: string) => void);
-        on(event: 'window.onerror', listener: (text: string) => void);
+        on(event: string, listener: (text: string) => void): void;
+        on(event: 'console.log', listener: (text: string) => void): void;
+        on(event: 'console.warn', listener: (text: string) => void): void;
+        on(event: 'console.error', listener: (text: string) => void): void;
+        on(event: 'window.onerror', listener: (text: string) => void): void;
     }
 
     export interface Driver {
-        exec(args: { func: Function; args?: any[]}, callback?: Function) : any;
+        exec(args: { func: Function; args?: any}, callback?: Function) : any;
         exec(func: Function, callback?: Function) : any;
 
-        setUrl(url: string, callback?: Function);
-        reuseBrowser(harnessUrl?: string);
+        setUrl(url: string, callback?: Function): void;
+        reuseBrowser(harnessUrl?: string): void;
 
-        waitFor(args: { condition: Function; exec?: Function; timeoutMS?: number; args?: any; timeoutError?: string; inBrowser?: boolean }, callback?: Function);
-        waitFor(condition: Function, callback?: Function);
+        waitFor(args: { condition: Function; exec?: Function; timeoutMS?: number; args?: any; timeoutError?: string; inBrowser?: boolean }, callback?: Function): void;
+        waitFor(condition: Function, callback?: Function): void;
 
         findElement(selector: string, callback?: (err: Error, element: ElementProxy) => void): ElementProxy;
         findElements(selector: string, callback?: (err: Error, elements: ElementProxy) => void): ElementProxy;
@@ -48,6 +48,8 @@ declare module "browser-harness" {
         find(selector: string, callback?: (err: Error, elements: ElementProxy) => void): ElementProxy;
 
         $(content: any, callback?: (err: Error, elements: ElementProxy) => void): ElementProxy;
+
+        getLastPopupWindow(callback: (err: Error, windowProxy: WindowProxy) => void): WindowProxy;
 
         events: DriverEvents;
     }
@@ -68,7 +70,8 @@ declare module "browser-harness" {
         attr(name: string, callback?: (err: Error, value: string) => void) : string
         attr(name: string, value: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         removeAttr(name: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
-        prop(name: string, callback?: (err: Error, value: string) => void) : string
+        prop(name: string, callback?: (err: Error, value: string) => void) : any
+        prop(name: string, value?: boolean, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         prop(name: string, value?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         removeProp(name: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         html(callback?: (err: Error, value: string) => void) : string
@@ -110,7 +113,7 @@ declare module "browser-harness" {
         toggle(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
 
         children(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
-        closest(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        closest(selector: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         contents(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         find(selector: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         findElements(selector: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
@@ -148,15 +151,19 @@ declare module "browser-harness" {
         sendEnterKey(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
     }
 
+    export interface WindowProxy {
+        getDriver(): Driver;
+    }
+
     export class Browser {
         //constructor(args: { type: string; location?: string; args?: string[] });
         constructor(args: { type: string; location?: string; args?: any; });
 
-        open(harnessUrl: string, serverUrl?: string);
-        close(callback?: Function);
+        open(harnessUrl: string, serverUrl?: string): void;
+        close(callback?: Function): void;
     }
 
-    export function listen(port: number, callback?: Function)
+    export function listen(port: number, callback?: Function): void;
     export var events: HarnessEvents;
     export var config: {
         timeoutMS: number;

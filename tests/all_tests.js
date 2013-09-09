@@ -35,6 +35,7 @@ describe('', function(){
     require('./test/transition.js').setup(args);
     require('./test/no-fibers.js').setup(args);
     require('./test/knockout.js').setup(args);
+    require('./test/popup.js').setup(args);
 
 
     //Reuse test needs to be last

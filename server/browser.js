@@ -27,10 +27,14 @@ var _createFirefoxProfile = function(ffLocation, callback){
                 return callback(err);
             }
 
-            if(contents.indexOf('browser.shell.checkDefaultBrowser') < 0 || contents.indexOf('toolkit.startup.max_resumed_crashes') < 0) {
+            if( contents.indexOf('browser.shell.checkDefaultBrowser') < 0 ||
+                contents.indexOf('toolkit.startup.max_resumed_crashes') < 0 ||
+                contents.indexOf('dom.disable_open_during_load') < 0
+            ){
                 var configEntries = [
                     'user_pref("browser.shell.checkDefaultBrowser", false);',
-                    'user_pref("toolkit.startup.max_resumed_crashes", -1);'
+                    'user_pref("toolkit.startup.max_resumed_crashes", -1);' +
+                    'user_pref("dom.disable_open_during_load", false);'
                 ].join('\n');
 
                 fs.appendFile(prefsLocation, configEntries, 'utf8', function(err){

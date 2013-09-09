@@ -1,0 +1,20 @@
+<html>
+<body>
+<script type="text/javascript">
+    function test(){
+        var x = window.open('http://localhost:63342/bb-browser-harness/test.html', '_blank');
+
+        x.onunload = function(){
+            if(x.closed){
+                console.log('closed!');
+            }
+        }
+
+        setInterval(function(){
+            console.log(x.closed);
+        }, 2000);
+    }
+</script>
+<button onclick="test()">open</button>
+</body>
+</html>
