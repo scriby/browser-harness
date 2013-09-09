@@ -5,11 +5,13 @@ var config = require('./config.js');
 //Use asyncblock to manage flow control if it's available
 var asyncblock = process.__asyncblock_included__;
 
+var WindowProxy = require('./window_proxy.js');
 var ElementProxy = require('./element_proxy.js');
 var utility = require('./utility.js');
 
-var Driver = function(now){
+var Driver = function(now, focusedWindow){
     this.now = now;
+    this.focusedWindow = focusedWindow;
     this.events = new events.EventEmitter();
 };
 
@@ -56,7 +58,8 @@ Driver.prototype.exec = function(args, callback){
     this.now.exec(
         {
             func: func.toString(),
-            args: funcArgs
+            args: funcArgs,
+            focusedWindow: this.focusedWindow
         },
 
         function(err){
@@ -332,6 +335,30 @@ Driver.prototype.$ = function(args, callback){
 
         args: args
     }, callback);
+};
+
+Driver.prototype.getLastPopupWindow = function(callback){
+    var self = this;
+
+    //Use asyncblock fibers if it is available
+    if(asyncblock && callback == null){
+        var flow = asyncblock.getCurrentFlow();
+
+        if(flow){
+            return flow.sync( this.getLastPopupWindow(flow.add()) );
+        }
+    }
+
+    return this.now.getLastPopupWindow(function(err, window){
+        if(err) { return callback(err); }
+
+        if(window != null){
+            window.__proto__ = WindowProxy.prototype;
+            window.driver = self;
+        }
+
+        return callback(null, window);
+    });
 };
 
 module.exports = Driver;
