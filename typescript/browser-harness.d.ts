@@ -49,6 +49,8 @@ declare module "browser-harness" {
 
         $(content: any, callback?: (err: Error, elements: ElementProxy) => void): ElementProxy;
 
+        getLastPopupWindow(callback: (err: Error, windowProxy: WindowProxy) => void): WindowProxy;
+
         events: DriverEvents;
     }
 
@@ -147,6 +149,10 @@ declare module "browser-harness" {
         setText(text: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         change(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         sendEnterKey(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+    }
+
+    export interface WindowProxy {
+        getDriver(): Driver;
     }
 
     export class Browser {
