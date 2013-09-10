@@ -19,6 +19,9 @@
                 self.lastPopupWindow = handle;
                 self.serialize(handle);
 
+                self.patch(handle);
+                retryPatchConsole(handle);
+
                 return handle;
             };
 
@@ -115,7 +118,7 @@
     patchElementToJson(window);
 
     var patchConsole = function(window){
-        if(!window.console.patched){
+        if(window && window.console && !window.__harness_consolePatched__){
             var oldLog = window.console.log;
             var oldError = window.console.error;
             var oldWarn = window.console.warn;
@@ -148,13 +151,14 @@
     };
 
     //Need to keep trying in case the page changes
-    var patchTestFrameConsole = function(){
-        var testFrameWindow = testFrame.contentWindow;
-        if(testFrameWindow && testFrameWindow.console && !testFrameWindow.__harness_consolePatched__) {
-            patchConsole(testFrameWindow);
-        }
+    var retryPatchConsole = function(window){
+        patchConsole(window);
 
-        setTimeout(patchTestFrameConsole, 100);
+        if(!window.closed){
+            setTimeout(function(){
+                retryPatchConsole(window);
+            }, 100);
+        }
     };
 
     var patchErrorHandler = function(window){
@@ -187,7 +191,7 @@
     };
 
     patchConsole(window);
-    patchTestFrameConsole();
+    retryPatchConsole(testFrame.contentWindow);
 
     patchErrorHandler(window);
     patchTestFrameErrorHandler();
@@ -223,63 +227,62 @@
     };
 
     var exec = function(args, callback){
-        var focusedWindow = args.focusedWindow;
+        try{
+            var focusedWindow = args.focusedWindow;
 
-        var hasCallback = false;
-        var match = /^function\s*\(([^\)]*)\)/.exec(args.func);
-        var funcArgs;
-        if(match[1] != null){
-            funcArgs = match[1].split(',');
+            var hasCallback = false;
+            var match = /^function\s*\(([^\)]*)\)/.exec(args.func);
+            var funcArgs;
+            if(match[1] != null){
+                funcArgs = match[1].split(',');
 
-            if(funcArgs.length === 1 && funcArgs[0] === ''){
+                if(funcArgs.length === 1 && funcArgs[0] === ''){
+                    funcArgs = [];
+                }
+
+                if(args.args && funcArgs.length > 1){
+                    hasCallback = true;
+                } else if(!args.args && funcArgs.length > 0){
+                    hasCallback = true;
+                }
+            } else {
                 funcArgs = [];
             }
 
-            if(args.args && funcArgs.length > 1){
-                hasCallback = true;
-            } else if(!args.args && funcArgs.length > 0){
-                hasCallback = true;
+            var funcText = args.func;
+            funcText = funcText.replace(/^function.*\{/, '');
+            funcText = funcText.replace(/\}$/, '');
+
+            var func;
+            if(funcArgs.length === 0){
+                func = new focusedWindow.Function(funcText);
+            } else if(funcArgs.length === 1){
+                func = new focusedWindow.Function(funcArgs[0], funcText);
+            } else if(funcArgs.length === 2){
+                func = new focusedWindow.Function(funcArgs[0], funcArgs[1], funcText);
             }
-        } else {
-            funcArgs = [];
-        }
 
-        var funcText = args.func;
-        funcText = funcText.replace(/^function.*\{/, '');
-        funcText = funcText.replace(/\}$/, '');
+            WindowManager.patch(focusedWindow);
+            patchJQueryExtensions($);
+            patchJQueryExtensions(focusedWindow.$);
 
-        var func;
-        if(funcArgs.length === 0){
-            func = new focusedWindow.Function(funcText);
-        } else if(funcArgs.length === 1){
-            func = new focusedWindow.Function(funcArgs[0], funcText);
-        } else if(funcArgs.length === 2){
-            func = new focusedWindow.Function(funcArgs[0], funcArgs[1], funcText);
-        }
+            if(focusedWindow.$.prototype.toJSON == null){
+                focusedWindow.$.prototype.toJSON = $.prototype.toJSON;
+            }
 
-        WindowManager.patch(focusedWindow);
-        patchJQueryExtensions($);
-        patchJQueryExtensions(focusedWindow.$);
-
-        if(focusedWindow.$.prototype.toJSON == null){
-            focusedWindow.$.prototype.toJSON = $.prototype.toJSON;
-        }
-
-        patchElementToJson(focusedWindow);
-        if(hasCallback){
-            if(args.args){
-                func(convertArgument(args.args, focusedWindow), callback);
+            patchElementToJson(focusedWindow);
+            if(hasCallback){
+                if(args.args){
+                    func(convertArgument(args.args, focusedWindow), callback);
+                } else {
+                    func(callback);
+                }
             } else {
-                func(callback);
-            }
-        } else {
-            try{
                 var result = func(convertArgument(args.args, focusedWindow));
-
                 callback(null, result);
-            } catch(e){
-                callback((e && e.stack) || (e && e.message) || e || 'A javascript error occurred in the browser');
             }
+        } catch(e){
+            callback((e && e.stack) || (e && e.message) || e || 'A javascript error occurred in the browser');
         }
     };
 
