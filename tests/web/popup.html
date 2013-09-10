@@ -1,5 +1,8 @@
 <html>
     <body>
-        <button class="open-popup" onclick="window.open(document.location.href, '_blank');">open popup</button>
+        <button class="open-popup" onclick="lastPopup = window.open(document.location.href, '_blank');">open popup</button>
+        <button class="open-popup-2" onclick="lastPopup = window.open(document.location.href, '_blank');">open popup</button>
+
+        <button class="close-self" onclick="window.close();">close popup</button>
     </body>
 </html>

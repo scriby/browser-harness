@@ -366,12 +366,26 @@ Driver.prototype.getLastPopupWindow = function(callback){
         if(err) { return callback(err); }
 
         if(window != null){
-            window.__proto__ = WindowProxy.prototype;
-            window.driver = self;
+            window = new WindowProxy(self, window.id);
         }
 
         return callback(null, window);
     });
+};
+
+Driver.prototype.isWindowOpen = function(windowProxy, callback){
+    var self = this;
+
+    //Use asyncblock fibers if it is available
+    if(asyncblock && callback == null){
+        var flow = asyncblock.getCurrentFlow();
+
+        if(flow){
+            return flow.sync( this.isWindowOpen(windowProxy, flow.add()) );
+        }
+    }
+
+    return this.now.isWindowOpen(windowProxy, callback);
 };
 
 module.exports = Driver;

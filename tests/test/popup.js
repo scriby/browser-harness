@@ -27,7 +27,19 @@ exports.setup = function(args){
             driver.clearLastPopupWindow();
             assert.ok(!driver.getLastPopupWindow());
 
-            popupButton = driver.findVisible('button').click();
+            assert.ok(popup.isOpen());
+            popupDriver.findVisible('button.close-self').click();
+
+            driver.waitFor({
+                condition: function(){
+                    return !popup.isOpen();
+                },
+                timeoutMS: 500
+            });
+        });
+
+        tu.it('Opens another popup', function(){
+            popupButton = driver.findVisible('button.open-popup-2').click();
             popup = driver.getLastPopupWindow();
             assert.ok(popup != null);
         });

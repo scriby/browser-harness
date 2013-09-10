@@ -53,6 +53,19 @@
             return this.serialize(this.lastPopupWindow);
         };
 
+        WindowManager.prototype.isWindowOpen = function(id){
+            var existing = this.cache[id];
+
+            if(!existing){
+                return false;
+            } else if(existing.closed){
+                delete this.cache[id];
+                return false;
+            } else {
+                return true;
+            }
+        };
+
         WindowManager.prototype.getFrame = function($element){
             return this.serialize($element[0].contentWindow);
         };
@@ -329,6 +342,10 @@
 
     now.getLastPopupWindow = function(callback){
         return callback(null, WindowManager.getLastPopupWindow());
+    };
+
+    now.isWindowOpen = function(windowProxy, callback){
+        return callback(null, WindowManager.isWindowOpen(windowProxy.id));
     };
 
     now.ready(function(){
