@@ -49,7 +49,8 @@ declare module "browser-harness" {
 
         $(content: any, callback?: (err: Error, elements: ElementProxy) => void): ElementProxy;
 
-        getLastPopupWindow(callback: (err: Error, windowProxy: WindowProxy) => void): WindowProxy;
+        clearLastPopupWindow(callback?: (err: Error) => void): void;
+        getLastPopupWindow(callback?: (err: Error, windowProxy: WindowProxy) => void): WindowProxy;
 
         events: DriverEvents;
     }

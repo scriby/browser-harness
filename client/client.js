@@ -45,6 +45,10 @@
             return matches;
         };
 
+        WindowManager.prototype.clearLastPopupWindow = function(){
+            this.lastPopupWindow = null;
+        };
+
         WindowManager.prototype.getLastPopupWindow = function(){
             return this.serialize(this.lastPopupWindow);
         };
@@ -316,6 +320,11 @@
         } else {
             location.replace(location.href);
         }
+    };
+
+    now.clearLastPopupWindow = function(callback){
+        WindowManager.clearLastPopupWindow();
+        callback();
     };
 
     now.getLastPopupWindow = function(callback){

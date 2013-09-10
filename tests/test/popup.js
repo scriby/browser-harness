@@ -23,6 +23,13 @@ exports.setup = function(args){
 
             var popupDriver = popup.getDriver();
             popupDriver.findVisible({ selector: 'button.open-popup', timeoutMS: 1000 });
+
+            driver.clearLastPopupWindow();
+            assert.ok(!driver.getLastPopupWindow());
+
+            popupButton = driver.findVisible('button').click();
+            popup = driver.getLastPopupWindow();
+            assert.ok(popup != null);
         });
     });
 };

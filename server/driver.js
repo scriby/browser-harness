@@ -337,6 +337,19 @@ Driver.prototype.$ = function(args, callback){
     }, callback);
 };
 
+Driver.prototype.clearLastPopupWindow = function(callback){
+    //Use asyncblock fibers if it is available
+    if(asyncblock && callback == null){
+        var flow = asyncblock.getCurrentFlow();
+
+        if(flow){
+            return flow.sync( this.clearLastPopupWindow(flow.add()) );
+        }
+    }
+
+    this.now.clearLastPopupWindow(callback);
+};
+
 Driver.prototype.getLastPopupWindow = function(callback){
     var self = this;
 
