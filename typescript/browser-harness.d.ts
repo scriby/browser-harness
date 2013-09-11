@@ -49,9 +49,11 @@ declare module "browser-harness" {
 
         $(content: any, callback?: (err: Error, elements: ElementProxy) => void): ElementProxy;
 
-        getLastPopupWindow(callback: (err: Error, windowProxy: WindowProxy) => void): WindowProxy;
+        clearLastPopupWindow(callback?: (err: Error) => void): void;
+        getLastPopupWindow(callback?: (err: Error, windowProxy: WindowProxy) => void): WindowProxy;
 
         events: DriverEvents;
+        focusedWindow: WindowProxy;
     }
 
     export interface TopLeft {
@@ -153,6 +155,7 @@ declare module "browser-harness" {
 
     export interface WindowProxy {
         getDriver(): Driver;
+        isOpen(callback?: (err: Error, isOpen: boolean) => void): boolean;
     }
 
     export class Browser {

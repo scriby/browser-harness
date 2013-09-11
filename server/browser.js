@@ -51,16 +51,19 @@ var _createFirefoxProfile = function(ffLocation, callback){
     });
 };
 
+var _chromeArgs = [ '*URL*', '--user-data-dir=/tmp/*RANDOM*', '-incognito', '--disable-prompt-on-repost', '--no-default-browser-check', '--no-first-run', '--disable-background-networking', '--disable-sync', '--disable-translate', '--disable-web-resources', '--safebrowsing-disable-auto-update', '--safebrowsing-disable-download-protection', '--disable-client-side-phishing-detection', '--disable-component-update', '--disable-default-apps', '--use-mock-keychain', '--ignore-certificate-errors', '-disable-popup-blocking'];
+var _firefoxArgs = [ '-private', '-no-remote', '-silent', '-P', 'harness', '*URL*' ];
+
 var _defaultConfig = {
     darwin: {
         chrome: {
             location: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-            args: [ '*URL*', '--user-data-dir=/tmp/*RANDOM*', '-incognito', '--disable-prompt-on-repost', '--no-default-browser-check', '--no-first-run', '--disable-background-networking', '--disable-sync', '--disable-translate', '--disable-web-resources', '--safebrowsing-disable-auto-update', '--safebrowsing-disable-download-protection', '--disable-client-side-phishing-detection', '--disable-component-update', '--disable-default-apps', '--use-mock-keychain', '--ignore-certificate-errors', '-disable-popup-blocking']
+            args: _chromeArgs
         },
 
         firefox: {
             location: "/Applications/Firefox.app/Contents/MacOS/firefox",
-            args: [ '-private', '-no-remote', '-silent', '-P', 'harness', '*URL*' ]
+            args: _firefoxArgs
         },
 
         safari: {
@@ -76,13 +79,18 @@ var _defaultConfig = {
 
     linux: {
         chrome: {
+            location: 'google-chrome',
+            args: _chromeArgs
+        },
+
+        chromium: {
             location: 'chromium-browser',
-            args: [ '*URL*', '--user-data-dir=/tmp/*RANDOM*', '-incognito', '--disable-prompt-on-repost', '--no-default-browser-check', '--no-first-run', '--disable-background-networking', '--disable-sync', '--disable-translate', '--disable-web-resources', '--safebrowsing-disable-auto-update', '--safebrowsing-disable-download-protection', '--disable-client-side-phishing-detection', '--disable-component-update', '--disable-default-apps', '--use-mock-keychain', '--ignore-certificate-errors', '-disable-popup-blocking']
+            args: _chromeArgs
         },
 
         firefox: {
             location: "firefox",
-            args: [ '-private', '-no-remote', '-silent', '-P', 'harness', '*URL*' ]
+            args: _firefoxArgs
         },
 
         phantomjs: {

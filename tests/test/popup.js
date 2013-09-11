@@ -23,6 +23,25 @@ exports.setup = function(args){
 
             var popupDriver = popup.getDriver();
             popupDriver.findVisible({ selector: 'button.open-popup', timeoutMS: 1000 });
+
+            driver.clearLastPopupWindow();
+            assert.ok(!driver.getLastPopupWindow());
+
+            assert.ok(popup.isOpen());
+            popupDriver.findVisible('button.close-self').click();
+
+            driver.waitFor({
+                condition: function(){
+                    return !popup.isOpen();
+                },
+                timeoutMS: 500
+            });
+        });
+
+        tu.it('Opens another popup', function(){
+            popupButton = driver.findVisible('button.open-popup-2').click();
+            popup = driver.getLastPopupWindow();
+            assert.ok(popup != null);
         });
     });
 };
