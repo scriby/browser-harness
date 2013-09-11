@@ -24,8 +24,12 @@
                 return query;
             }
 
+            function getBaseURL () {
+               return location.protocol + "//" + location.hostname;
+            }
+
             var query = parseQuery();
-            var host = query.host || 'http://localhost:4500';
+            var host = query.host || (getBaseURL() + ':4500');
             if(host.indexOf('://') < 0){
                 host = 'http://' + host;
             }
