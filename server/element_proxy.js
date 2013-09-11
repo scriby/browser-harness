@@ -308,7 +308,7 @@ ElementProxy.prototype.selectByText = function(text, callback) {
         var flow = asyncblock.getCurrentFlow();
 
         if(flow){
-            return flow.sync( this.setText(text, flow.add()) );
+            return flow.sync( this.selectByText(text, flow.add()) );
         }
     }
 
