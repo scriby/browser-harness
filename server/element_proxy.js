@@ -302,16 +302,17 @@ ElementProxy.prototype.filter = function(selector, callback){
     return this._exec({ func: 'filter', args: arguments });
 };
 
-ElementProxy.prototype.selectByText = function(text, callback) {
+ElementProxy.prototype.selectDropdownByText = function(text, callback) {
     //Use asyncblock fibers if it is available
     if(asyncblock && callback == null){
         var flow = asyncblock.getCurrentFlow();
 
         if(flow){
-            return flow.sync( this.selectByText(text, flow.add()) );
+            return flow.sync( this.selectDropdownByText(text, flow.add()) );
         }
     }
 
+    var dropdown = this;
     return this.find('option', function(err, result) {
         if (err) { return callback(err); }
 
@@ -324,7 +325,11 @@ ElementProxy.prototype.selectByText = function(text, callback) {
                 if (err) { return callback(err); }
 
                 if (result === text) {
-                    return el.prop('selected', true, callback);
+                    return el.val(function(err, result) {
+                        if (err) { return callback(err); }
+
+                        return dropdown.selectDropdownByValue(result, callback);
+                    });
                 } else {
                     return el.next(function(err, result) {
                         if (err) { return callback(err); }
@@ -339,6 +344,45 @@ ElementProxy.prototype.selectByText = function(text, callback) {
             if (err) { return callback(err); }
 
             return iterate(result);
+        });
+    });
+};
+
+ElementProxy.prototype.selectDropdownByValue = function(value, callback) {
+    //Use asyncblock fibers if it is available
+    if(asyncblock && callback == null){
+        var flow = asyncblock.getCurrentFlow();
+
+        if(flow){
+            return flow.sync( this.selectDropdownByValue(value, flow.add()) );
+        }
+    }
+
+    return this.val(value, function(err, result) {
+        if (err) { return callback(err); }
+
+        return result.change(callback);
+    });
+};
+
+ElementProxy.prototype.selectDropdownByIndex = function(index, callback) {
+    //Use asyncblock fibers if it is available
+    if(asyncblock && callback == null){
+        var flow = asyncblock.getCurrentFlow();
+
+        if(flow){
+            return flow.sync( this.selectDropdownByIndex(index, flow.add()) );
+        }
+    }
+
+    var dropdown = this;
+    return this.find('option:nth-child(' + (index + 1) + ')', function(err, result) {
+        if (err) { return callback(err); }
+
+        return result.val(function(err, result) {
+            if (err) { return callback(err); }
+
+            return dropdown.selectDropdownByValue(result, callback);
         });
     });
 };
