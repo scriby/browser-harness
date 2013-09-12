@@ -148,7 +148,9 @@ declare module "browser-harness" {
 
         append(content: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
 
-        selectByText(text: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        selectDropdownByText(text: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        selectDropdownByValue(value: string, callback?: (err: Error, eleemnt: ElementProxy) => void) : ElementProxy
+        selectDropdownByIndex(index: number, callback?: (err: Error, element: ElementProxy) => void): ElementProxy
         setText(text: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         change(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         sendEnterKey(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
