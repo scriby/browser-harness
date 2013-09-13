@@ -5,6 +5,22 @@
         <input type="text" id="changable" data-bind="value: changableValue" />
         <input type="text" id="status" />
 
+        <select id="dropdownNoValues" data-bind="value: ddlNoVal">
+            <option>One</option>
+            <option>Two</option>
+            <option>Three</option>
+            <option>Four</option>
+        </select>
+        <input type="text" id="noValStatus" data-bind="value: ddlNoVal" />
+
+        <select id="dropdownWithValues" data-bind="value: ddlWithVal">
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+            <option value="4">Four</option>
+        </select>
+        <input type="text" id="withValStatus" data-bind="value: ddlWithVal" />
+
         <script type="text/javascript">
             document.write('<scr' + 'ipt type="text/javascript" src="' + parent.window.harnessHost + '/vendor/jquery.js"></scr' + 'ipt>');
             document.write('<scr' + 'ipt type="text/javascript" src="' + parent.window.harnessHost + '/vendor/knockout-2.3.0.js"></scr' + 'ipt>');
@@ -17,7 +33,9 @@
 
                 var viewModel = {
                     theValue: ko.observable('initialVal'),
-                    changableValue: ko.observable('changableValue')
+                    changableValue: ko.observable('changableValue'),
+                    ddlNoVal: ko.observable(),
+                    ddlWithVal: ko.observable()
                 };
 
                 ko.applyBindings(viewModel, $('body')[0]);
