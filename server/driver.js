@@ -327,13 +327,21 @@ Driver.prototype.findVisibles = function(args, callback){
     return this.findVisible(args, callback);
 };
 
-Driver.prototype.$ = function(args, callback){
+Driver.prototype.$ = function(selector, context, callback){
+    if (callback == null && typeof context === 'function') {
+        callback = context;
+        context = null;
+    }
     return this.exec({
-        func: function(arg){
-            return $(arg);
+        func: function(args){
+            if (args.context != null) {
+                return $(args.selector, args.context);
+            } else {
+                return $(args.selector);
+            }
         },
 
-        args: args
+        args: { selector: selector, context: context }
     }, callback);
 };
 

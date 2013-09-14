@@ -48,6 +48,7 @@ declare module "browser-harness" {
         find(selector: string, callback?: (err: Error, elements: ElementProxy) => void): ElementProxy;
 
         $(content: any, callback?: (err: Error, elements: ElementProxy) => void): ElementProxy;
+        $(content: any, context: ElementProxy, callback?: (err: Error, elements: ElementProxy) => void): ElementProxy;
 
         clearLastPopupWindow(callback?: (err: Error) => void): void;
         getLastPopupWindow(callback?: (err: Error, windowProxy: WindowProxy) => void): WindowProxy;
@@ -147,7 +148,9 @@ declare module "browser-harness" {
 
         append(content: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
 
-        selectByText(text: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        selectDropdownByText(text: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        selectDropdownByValue(value: string, callback?: (err: Error, eleemnt: ElementProxy) => void) : ElementProxy
+        selectDropdownByIndex(index: number, callback?: (err: Error, element: ElementProxy) => void): ElementProxy
         setText(text: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         change(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         sendEnterKey(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
