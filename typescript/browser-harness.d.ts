@@ -66,6 +66,7 @@ declare module "browser-harness" {
         length: number;
 
         click(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        dblclick(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         focus(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         blur(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         val(callback?: (err: Error, value: string) => void) : string
