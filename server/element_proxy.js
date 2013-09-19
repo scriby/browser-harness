@@ -67,6 +67,10 @@ ElementProxy.prototype.click = function(callback){
     return this._exec({ func: 'click', args: arguments });
 };
 
+ElementProxy.prototype.dblclick = function(callback){
+    return this._exec({ func: 'dblclick', args: arguments });
+};
+
 ElementProxy.prototype.focus = function(callback){
     return this._exec({ func: 'focus', args: arguments });
 };
