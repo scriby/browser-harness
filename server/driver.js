@@ -254,35 +254,31 @@ Driver.prototype.findElements = Driver.prototype.find = function(args, callback)
     return this.findElement(args, callback);
 };
 
-var _isVisible = function(element, selector, startTime, callback){
+var _isVisible = function(element, callback){
     element._filterVisible(function(err, visibleElements){
         if(err) {
             return callback(err);
         }
 
-        //Not all the elements are visible, return the visible ones
+        //Not all the elements may be visible, return the visible ones
         if(visibleElements && visibleElements.length > 0){
             callback(null, visibleElements);
         } else {
-            if(new Date() - startTime < config.timeoutMS){
-                setTimeout(function(){
-                   _isVisible(element, selector, startTime, callback);
-                }, config.retryMS);
-            } else {
-                return callback(new Error('Element "' + selector + '" was found, but is not visible.'));
-            }
+            callback(null, false);
         }
     });
 };
 
 Driver.prototype.findVisible = function(args, callback){
     var selector, multi;
+    var self = this;
 
     if(typeof args === 'object'){
         selector = args.selector;
         multi = args.multi;
+        args.startTime = args.startTime || new Date();
     } else {
-        args = { selector: args };
+        args = { selector: args, startTime: new Date() };
     }
 
     //Use asyncblock fibers if it is available
@@ -303,9 +299,21 @@ Driver.prototype.findVisible = function(args, callback){
             return callback(err);
         }
 
-        _isVisible(element, selector, new Date(), function(err, visibles){
+        _isVisible(element, function(err, visibles){
             if(err){
                 return callback(err);
+            }
+
+            if(!visibles){
+                if(new Date() - args.startTime < config.timeoutMS){
+                    setTimeout(function(){
+                        self.findVisible(args, callback);
+                    }, config.retryMS);
+                } else {
+                    callback(new Error('Element "' + selector + '" was found, but is not visible.'));
+                }
+
+                return;
             }
 
             if(!multi && visibles.length > 1){

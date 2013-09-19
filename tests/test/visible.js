@@ -1,5 +1,6 @@
 var tu = require('../test_util.js');
 var assert = require('assert');
+var asyncblock = require('asyncblock');
 
 exports.setup = function(args){
     describe('When viewing visible.html', function(){
@@ -35,13 +36,13 @@ exports.setup = function(args){
             assert(testButton.length, 1);
         });
 
-        tu.it('.test-button-1 can be found using body.findVisible', function(){
+        tu.it('.test-button:first can be found using body.findVisible', function(){
             var testButton = driver.findElement('body').findVisible('.test-button:first');
             assert(testButton);
             assert(testButton.length, 1);
         });
 
-        tu.it('.test-button-1 can be found using body.findVisibles', function(){
+        tu.it('.test-button can be found using body.findVisibles', function(){
             var testButton = driver.findElement('body').findVisibles('.test-button');
             assert(testButton);
             assert(testButton.length, 1);
@@ -101,5 +102,16 @@ exports.setup = function(args){
 
             assert(multi.length === 1);
         });
+
+        tu.it('If a different visible matching element exists later, it will be found', function(){
+            process.nextTick(function(){
+                asyncblock(function(){
+                    driver.findVisible('body').append('<div class="test-div-5 added-later"></div>');
+                })
+            });
+
+            var testDiv = driver.findVisible('.test-div-5');
+            assert.ok(testDiv.hasClass('added-later'));
+        })
     });
 };
