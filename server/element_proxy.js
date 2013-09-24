@@ -456,4 +456,12 @@ ElementProxy.prototype.sendEnterKey = function(callback) {
     });
 };
 
+ElementProxy.prototype.waitUntil = function(selector, callback){
+    var self = this;
+
+    return this.driver.waitFor(function(){
+        return self.is(selector);
+    }, callback);
+};
+
 module.exports = ElementProxy;
