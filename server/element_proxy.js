@@ -457,11 +457,22 @@ ElementProxy.prototype.sendEnterKey = function(callback) {
 };
 
 ElementProxy.prototype.waitUntil = function(selector, callback){
+    //Use asyncblock fibers if it is available
+    if(asyncblock && callback == null){
+        var flow = asyncblock.getCurrentFlow();
+
+        if(flow){
+            return flow.sync( this.waitUntil(selector, flow.add()) );
+        }
+    }
+
     var self = this;
 
     return this.driver.waitFor(function(){
         return self.is(selector);
-    }, callback);
+    }, function(err){
+        callback(err, self);
+    });
 };
 
 module.exports = ElementProxy;
