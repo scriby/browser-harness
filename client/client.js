@@ -282,7 +282,21 @@
                 callback(null, result);
             }
         } catch(e){
-            callback((e && e.stack) || (e && e.message) || e || 'A javascript error occurred in the browser');
+            var toReport = '';
+            var message = (e && e.message) || '';
+            var stack = (e && e.stack) || '';
+
+            if(message && stack){
+                toReport = message + '\n\n' + stack;
+            } else if(message){
+                toReport = message;
+            } else if(stack){
+                toReport = stack;
+            } else {
+                toReport = e || 'A javascript error occurred in the browser';
+            }
+
+            callback(toReport);
         }
     };
 

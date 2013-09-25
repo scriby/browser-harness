@@ -84,5 +84,29 @@ exports.setup = function(args){
             assert(div);
             assert.equal(div.length, 1);
         });
+
+        tu.it('waitUntil waits for an element to become visible', function(){
+            var element = driver.findElement('div.wait-until-test');
+
+            process.nextTick(function(){
+                element.css('display', 'block');
+            });
+
+            element.waitUntil(':visible');
+
+            assert.ok(element.is(':visible'));
+        });
+
+        tu.it('waitUntil waits for an element to have a class', function(){
+            var element = driver.findElement('div.wait-until-test');
+
+            process.nextTick(function(){
+                element.addClass('ready');
+            });
+
+            element.waitUntil('.ready');
+
+            assert.ok(element.hasClass('ready'));
+        });
     });
 };
