@@ -155,6 +155,8 @@ declare module "browser-harness" {
         setText(text: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         change(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         sendEnterKey(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+
+        waitUntil(selector: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
     }
 
     export interface WindowProxy {
