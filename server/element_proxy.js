@@ -1,5 +1,6 @@
 //Use asyncblock to manage flow control if it's available
 var asyncblock = process.__asyncblock_included__;
+var config = require('./config.js');
 
 var ElementProxy = function(driver){
     this.driver = driver;
@@ -306,66 +307,123 @@ ElementProxy.prototype.filter = function(selector, callback){
     return this._exec({ func: 'filter', args: arguments });
 };
 
-ElementProxy.prototype.selectDropdownByText = function(text, callback) {
+ElementProxy.prototype.selectDropdownByText = function(args, callback) {
     //Use asyncblock fibers if it is available
     if(asyncblock && callback == null){
         var flow = asyncblock.getCurrentFlow();
 
         if(flow){
-            return flow.sync( this.selectDropdownByText(text, flow.add()) );
+            return flow.sync( this.selectDropdownByText(args, flow.add()) );
         }
     }
 
-    var dropdown = this;
-    return this.find('option', function(err, result) {
-        if (err) { return callback(err); }
+    var text, startTime, timeoutMS;
+    if(args && typeof args === 'object'){
+        text = args.text;
+        startTime = args.startTime || new Date();
+        timeoutMS = args.timeoutMS;
+    } else {
+        text = args;
+        startTime = new Date();
+        timeoutMS = config.timeoutMS;
+    }
 
-        var iterate = function(el) {
-            if (!el || !el.length) {
-                return callback();
-            }
+    var self = this;
+    this.driver.exec({
+        func: function(args){
+            var dropdown = args.dropdown;
+            var optionFound = false;
 
-            return el.text(function(err, result) {
-                if (err) { return callback(err); }
+            dropdown.find('option').each(function(){
+                var $this = $(this);
+                if($this.text() === args.text){
+                    dropdown.val($this.val());
+                    dropdown.change();
 
-                if (result === text) {
-                    return el.val(function(err, result) {
-                        if (err) { return callback(err); }
+                    optionFound = true;
 
-                        return dropdown.selectDropdownByValue(result, callback);
-                    });
-                } else {
-                    return el.next(function(err, result) {
-                        if (err) { return callback(err); }
-
-                        return iterate(result);
-                    });
+                    return false; //Stop iterating
                 }
             });
-        };
 
-        return result.first(function(err, result) {
-            if (err) { return callback(err); }
+            if(!optionFound){
+                throw new Error('Dropdown option not found by text: ' + args.text);
+            }
+        },
 
-            return iterate(result);
-        });
+        args: { dropdown: this, text: text }
+    }, function(err){
+        if(err && err.indexOf && err.indexOf('Dropdown option not found by text') >= 0){
+            if(new Date() - startTime < timeoutMS){
+                setTimeout(function(){
+                    self.selectDropdownByText({ text: text, startTime: startTime, timeoutMS: timeoutMS }, callback);
+                }, config.retryMS);
+
+                return;
+            }
+        }
+
+        callback(err, self);
     });
 };
 
-ElementProxy.prototype.selectDropdownByValue = function(value, callback) {
+ElementProxy.prototype.selectDropdownByValue = function(args, callback) {
     //Use asyncblock fibers if it is available
     if(asyncblock && callback == null){
         var flow = asyncblock.getCurrentFlow();
 
         if(flow){
-            return flow.sync( this.selectDropdownByValue(value, flow.add()) );
+            return flow.sync( this.selectDropdownByValue(args, flow.add()) );
         }
     }
 
-    return this.val(value, function(err, result) {
-        if (err) { return callback(err); }
+    var value, startTime, timeoutMS;
+    if(args && typeof args === 'object'){
+        value = args.value;
+        startTime = args.startTime || new Date();
+        timeoutMS = args.timeoutMS;
+    } else {
+        value = args;
+        startTime = new Date();
+        timeoutMS = config.timeoutMS;
+    }
 
-        return result.change(callback);
+    var self = this;
+    this.driver.exec({
+        func: function(args){
+            var dropdown = args.dropdown;
+            var optionFound = false;
+
+            dropdown.find('option').each(function(){
+                var $this = $(this);
+                if($this.val() === args.value){
+                    dropdown.val($this.val());
+                    dropdown.change();
+
+                    optionFound = true;
+
+                    return false; //Stop iterating
+                }
+            });
+
+            if(!optionFound){
+                throw new Error('Dropdown option not found by value: ' + args.value);
+            }
+        },
+
+        args: { dropdown: this, value: value }
+    }, function(err){
+        if(err && err.indexOf && err.indexOf('Dropdown option not found by value') >= 0){
+            if(new Date() - startTime < timeoutMS){
+                setTimeout(function(){
+                    self.selectDropdownByValue({ value: value, startTime: startTime, timeoutMS: timeoutMS }, callback);
+                }, config.retryMS);
+
+                return;
+            }
+        }
+
+        callback(err, self);
     });
 };
 
@@ -382,6 +440,10 @@ ElementProxy.prototype.selectDropdownByIndex = function(index, callback) {
     var dropdown = this;
     return this.find('option:nth-child(' + (index + 1) + ')', function(err, result) {
         if (err) { return callback(err); }
+
+        if(result.length === 0){
+            return callback('Dropdown option not found by index: ' + index);
+        }
 
         return result.val(function(err, result) {
             if (err) { return callback(err); }
