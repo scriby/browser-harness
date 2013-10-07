@@ -114,11 +114,20 @@
                 return convertFromDomElement(this);
             };
         }
+
+        //Accessing window.Element for another window (even same origin) throws an error in IE 8/9. Here's a workaround:
+        //var x = window.Function('_harness', 'window.Element.prototype.toJSON = function(){ return _harness.convertFromDomElement(this); }');
+        //x(_harness);
     };
+    
     patchElementToJson(window);
 
     var patchConsole = function(window){
-        if(window && window.console && !window.__harness_consolePatched__){
+        if(window && !window.__harness_consolePatched__){
+            if(!window.console){
+                window.console = {};
+            }
+
             var oldLog = window.console.log;
             var oldError = window.console.error;
             var oldWarn = window.console.warn;
@@ -127,7 +136,10 @@
                 if(now.sendConsoleLog) {
                     now.sendConsoleLog(text);
                 }
-                oldLog.call(window.console, text);
+
+                if(oldLog && oldLog.call){
+                    oldLog.call(window.console, text);
+                }
             };
 
             window.console.warn = function(text){
@@ -135,7 +147,9 @@
                     now.sendConsoleWarn(text);
                 }
 
-                oldWarn.call(window.console, text);
+                if(oldWarn && oldWarn.call){
+                    oldWarn.call(window.console, text);
+                }
             };
 
             window.console.error = function(text){
@@ -143,7 +157,9 @@
                     now.sendConsoleError(text);
                 }
 
-                oldError.call(window.console, text);
+                if(oldError && oldError.call){
+                    oldError.call(window.console, text);
+                }
             };
 
             window.__harness_consolePatched__ = true;
@@ -152,7 +168,12 @@
 
     //Need to keep trying in case the page changes
     var retryPatchConsole = function(window){
-        patchConsole(window);
+        try{
+            patchConsole(window);
+        } catch(e){
+            //IE 10 throws a permission error sometimes
+            console && console.log(e);
+        }
 
         if(!window.closed){
             setTimeout(function(){
@@ -205,7 +226,7 @@
                 return !$this.is(':hidden') &&
                     $this.css('visibility') !== 'hidden' &&
                     $this.parents().filter(function(){
-                        return $this.css('visibility') === 'hidden';
+                        return $(this).css('visibility') === 'hidden';
                     }).length === 0;
             };
 
@@ -222,7 +243,8 @@
     $.prototype.toJSON = function(){
         return {
             isElementArray: true,
-            elements: Array.prototype.slice.call(this, 0) //Convert to array. Need to remove extra jQuery properties as they don't always serialize well
+            //This map helps work around some squirly errors in old IE when returning elements from other windows
+            elements: Array.prototype.slice.call(this, 0).map(function(element){ return element.toJSON(); }) //Convert to array. Need to remove extra jQuery properties as they don't always serialize well
         };
     };
 
@@ -255,11 +277,11 @@
 
             var func;
             if(funcArgs.length === 0){
-                func = new focusedWindow.Function(funcText);
+                func = focusedWindow.Function(funcText);
             } else if(funcArgs.length === 1){
-                func = new focusedWindow.Function(funcArgs[0], funcText);
+                func = focusedWindow.Function(funcArgs[0], funcText);
             } else if(funcArgs.length === 2){
-                func = new focusedWindow.Function(funcArgs[0], funcArgs[1], funcText);
+                func = focusedWindow.Function(funcArgs[0], funcArgs[1], funcText);
             }
 
             WindowManager.patch(focusedWindow);
@@ -281,7 +303,7 @@
                 var result = func(convertArgument(args.args, focusedWindow));
                 callback(null, result);
             }
-        } catch(e){
+       } catch(e){
             var toReport = '';
             var message = (e && e.message) || '';
             var stack = (e && e.stack) || '';
@@ -318,12 +340,7 @@
             }
         }
 
-        try{
-            exec(args, callback);
-        } catch(e){
-            console.log(e.stack);
-            throw e;
-        }
+        exec(args, callback);
     };
 
     now.setUrl = function(url, callback){
