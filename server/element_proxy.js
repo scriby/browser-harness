@@ -62,10 +62,15 @@ ElementProxy.prototype._exec = function(args, callback){
                 var result;
                 var elements = args.elements;
 
-                //Make sure the element is still in the DOM
-                for(var i = 0; i < elements.length; i++){
-                    if(!jQuery.contains(document.documentElement, elements[i])){
-                        throw new Error('Element does not exist in the DOM. ' + args.func + ' failed.');
+                //An exception is made for filterVisible because it is used when selecting elements
+                //It's possible that we select an element, then check its visibility, and it's gone from the DOM at that point
+                //Instead of erroring, we want to continue to try to select the element
+                if(args.func !== '_filterVisible'){
+                    //Make sure the element is still in the DOM
+                    for(var i = 0; i < elements.length; i++){
+                        if(!jQuery.contains(document.documentElement, elements[i])){
+                            throw new Error('Element does not exist in the DOM. ' + args.func + ' failed.');
+                        }
                     }
                 }
 
