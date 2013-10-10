@@ -124,7 +124,6 @@ declare module "browser-harness" {
         findElement(selector: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         findVisible(selector: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         findVisibles(selector: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
-        isActionable(callback?: (err: Error, element: ElementProxy) => void) : boolean
         first(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         has(arg: any, callback?: (err: Error, element: ElementProxy) => void) : boolean
         is(arg: any, callback?: (err: Error, element: ElementProxy) => void) : boolean

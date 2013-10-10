@@ -233,10 +233,6 @@
             $.fn._filterVisible = function(){
                 return this.filter($.fn._isVisible);
             };
-
-            $.fn._isActionable = function(){
-                return !this.is(":disabled") && this._isVisible();
-            };
         }
     };
 
