@@ -139,6 +139,7 @@ declare module "browser-harness" {
         prevAll(selector?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         prevUntil(selector?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         siblings(selector?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        eq(index: number, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
 
         data(name: string, callback?: (err: Error, value: any) => void) : any
         data(name: string, value?: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy

@@ -307,6 +307,10 @@ ElementProxy.prototype.siblings = function(selector, callback){
     return this._exec({ func: 'siblings', args: arguments });
 };
 
+ElementProxy.prototype.eq = function(index, callback) {
+    return this._exec({ func: 'eq', args: arguments });
+};
+
 
 ElementProxy.prototype.data = function(name, value, callback){
     return this._exec({ func: 'data', args: arguments });
