@@ -22,8 +22,19 @@ ElementProxy.prototype._exec = function(args, callback){
             func: function(args){
                 var elements = args.elements;
 
-                if(!elements._isActionable()){
-                    throw new Error('Element(s) are not actionable. ' + args.func + ' failed.');
+                //Make sure the element is still in the DOM
+                for(var i = 0; i < elements.length; i++){
+                    if(!jQuery.contains(document.documentElement, elements[i])){
+                        throw new Error('Element does not exist in the DOM. ' + args.func + ' failed.');
+                    }
+                }
+
+                if(elements.is(':disabled')){
+                    throw new Error('Element(s) are disabled. ' + args.func + ' failed.');
+                }
+
+                if(elements._filterVisible().length !== elements.length){
+                    throw new Error('Element(s) are not visible. ' + args.func + ' failed.');
                 }
 
                 var element = elements[0];
@@ -49,8 +60,20 @@ ElementProxy.prototype._exec = function(args, callback){
         return this.driver.exec({
             func: function(args){
                 var result;
-
                 var elements = args.elements;
+
+                //An exception is made for filterVisible because it is used when selecting elements
+                //It's possible that we select an element, then check its visibility, and it's gone from the DOM at that point
+                //Instead of erroring, we want to continue to try to select the element
+                if(args.func !== '_filterVisible'){
+                    //Make sure the element is still in the DOM
+                    for(var i = 0; i < elements.length; i++){
+                        if(!jQuery.contains(document.documentElement, elements[i])){
+                            throw new Error('Element does not exist in the DOM. ' + args.func + ' failed.');
+                        }
+                    }
+                }
+
                 result = elements[args.func].apply(elements, args.funcArgs);
                 return result;
             },
@@ -220,10 +243,6 @@ ElementProxy.prototype.findVisibles = function(selector, callback){
     return this.driver.findVisibles({ selector: selector, context: this }, callback);
 };
 
-ElementProxy.prototype.isActionable = function(callback){
-    return this._exec({ func: 'isActionable', args: arguments });
-};
-
 ElementProxy.prototype._filterVisible = function(callback){
     return this._exec({ func: '_filterVisible', args: arguments });
 };
@@ -286,6 +305,10 @@ ElementProxy.prototype.prevUntil = function(selector, callback){
 
 ElementProxy.prototype.siblings = function(selector, callback){
     return this._exec({ func: 'siblings', args: arguments });
+};
+
+ElementProxy.prototype.eq = function(index, callback) {
+    return this._exec({ func: 'eq', args: arguments });
 };
 
 

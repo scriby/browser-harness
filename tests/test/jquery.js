@@ -25,7 +25,7 @@ exports.setup = function(args){
         });
 
         tu.it('driver.$ creates an element', function(){
-            var element = driver.$('<div>test</div>').addClass('made-with-driver');
+            var element = driver.$('<div class="made-with-driver">test</div>');
             var body = driver.findVisible('body');
             body.append(element);
 

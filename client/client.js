@@ -233,10 +233,6 @@
             $.fn._filterVisible = function(){
                 return this.filter($.fn._isVisible);
             };
-
-            $.fn._isActionable = function(){
-                return !this.is(":disabled") && this._isVisible();
-            };
         }
     };
 
@@ -327,6 +323,12 @@
 
         if(args.focusedWindow.$ == null){
             try{
+                //This is a workaround for IE8 where eval is not available in the iframe until calling execScript
+                //http://stackoverflow.com/questions/2720444/why-does-this-window-object-not-have-the-eval-function
+                if(!args.focusedWindow.eval && args.focusedWindow.execScript){
+                    args.focusedWindow.execScript('null');
+                }
+
                 args.focusedWindow.eval(_jQueryScriptText);
             } catch(e){
                 //This is a workaround for Firefox. It was having problems with evaluating the jQuery script when the
