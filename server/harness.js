@@ -7,7 +7,7 @@ var server = require('http').createServer(app);
 var Driver = require('./driver.js');
 
 var nowjs = require("now");
-var everyone = nowjs.initialize(server);
+var everyone = nowjs.initialize(server, { socketio: { transports: ['websocket', 'flashsocket', 'htmlfile', 'xhr-polling', 'jsonp-polling'] } });
 
 var tests = [];
 
@@ -21,7 +21,7 @@ exports.listen = function(port, callback){
     server.listen(port || 4500, callback);
 };
 
-var _jqCache = fs.readFileSync(__dirname + '/../client/vendor/jquery.js', 'utf8');;
+var _jqCache = fs.readFileSync(__dirname + '/../client/vendor/jquery.js', 'utf8');
 everyone.now.getJqueryScriptText = function(callback){
     return callback(null, _jqCache);
 };
