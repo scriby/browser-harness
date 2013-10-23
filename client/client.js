@@ -125,15 +125,20 @@
     var getStackLocation = function(){
         var err;
         try {
-            throw new Error();
+            throw new Error('getting stack info');
         } catch(e){
             err = e;
         }
 
         if(err.stack){
-            return err.stack.split('\n')[3];
+            var split = err.stack.split('\n');
+            if(split[0].indexOf('Error:') === 0){
+                return split[3]; //Chrome
+            } else {
+                return split[2]; //Firefox
+            }
         } else if(err.sourceURL){
-            return err.sourceURL + ': ' + err.line;
+            return err.sourceURL + ': ' + err.line; //Safari
         }
     };
 
