@@ -18,15 +18,15 @@ declare module "browser-harness" {
 
     interface DriverEvents extends events.NodeEventEmitter {
         once(event: string, listener: (text: string) => void): void;
-        once(event: 'console.log', listener: (text: string) => void): void;
-        once(event: 'console.warn', listener: (text: string) => void): void;
-        once(event: 'console.error', listener: (text: string) => void): void;
+        once(event: 'console.log', listener: (text: string, location?: string) => void): void;
+        once(event: 'console.warn', listener: (text: string, location?: string) => void): void;
+        once(event: 'console.error', listener: (text: string, location?: string) => void): void;
         once(event: 'window.onerror', listener: (text: string) => void): void;
 
         on(event: string, listener: (text: string) => void): void;
-        on(event: 'console.log', listener: (text: string) => void): void;
-        on(event: 'console.warn', listener: (text: string) => void): void;
-        on(event: 'console.error', listener: (text: string) => void): void;
+        on(event: 'console.log', listener: (text: string, location?: string) => void): void;
+        on(event: 'console.warn', listener: (text: string, location?: string) => void): void;
+        on(event: 'console.error', listener: (text: string, location?: string) => void): void;
         on(event: 'window.onerror', listener: (text: string) => void): void;
     }
 
