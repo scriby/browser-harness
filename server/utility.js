@@ -4,7 +4,7 @@ exports.constructHarnessUrl = function(harnessUrl, serverUrl){
     }
 
     if(serverUrl){
-        if(serverUrl.indexOf('://')){
+        if(serverUrl.indexOf('://') < 0){
             serverUrl = 'http://' + serverUrl;
         }
 

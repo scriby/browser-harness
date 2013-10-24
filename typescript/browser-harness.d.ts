@@ -35,7 +35,7 @@ declare module "browser-harness" {
         exec(func: Function, callback?: Function) : any;
 
         setUrl(url: string, callback?: Function): void;
-        reuseBrowser(harnessUrl?: string): void;
+        reuseBrowser(harnessUrl?: string, serverUrl?: string): void;
 
         waitFor(args: { condition: Function; exec?: Function; timeoutMS?: number; args?: any; timeoutError?: string; inBrowser?: boolean }, callback?: Function): void;
         waitFor(condition: Function, callback?: Function): void;
