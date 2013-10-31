@@ -127,6 +127,7 @@ declare module "browser-harness" {
         first(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         has(arg: any, callback?: (err: Error, element: ElementProxy) => void) : boolean
         is(arg: any, callback?: (err: Error, element: ElementProxy) => void) : boolean
+        not(arg: any, callback?: (err: Error, element: ElementProxy) => void) :boolean
         last(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         next(selector?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         nextAll(selector?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
