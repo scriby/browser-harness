@@ -18,15 +18,15 @@ declare module "browser-harness" {
 
     interface DriverEvents extends events.NodeEventEmitter {
         once(event: string, listener: (text: string) => void): void;
-        once(event: 'console.log', listener: (text: string) => void): void;
-        once(event: 'console.warn', listener: (text: string) => void): void;
-        once(event: 'console.error', listener: (text: string) => void): void;
+        once(event: 'console.log', listener: (text: string, location?: string) => void): void;
+        once(event: 'console.warn', listener: (text: string, location?: string) => void): void;
+        once(event: 'console.error', listener: (text: string, location?: string) => void): void;
         once(event: 'window.onerror', listener: (text: string) => void): void;
 
         on(event: string, listener: (text: string) => void): void;
-        on(event: 'console.log', listener: (text: string) => void): void;
-        on(event: 'console.warn', listener: (text: string) => void): void;
-        on(event: 'console.error', listener: (text: string) => void): void;
+        on(event: 'console.log', listener: (text: string, location?: string) => void): void;
+        on(event: 'console.warn', listener: (text: string, location?: string) => void): void;
+        on(event: 'console.error', listener: (text: string, location?: string) => void): void;
         on(event: 'window.onerror', listener: (text: string) => void): void;
     }
 
@@ -35,7 +35,7 @@ declare module "browser-harness" {
         exec(func: Function, callback?: Function) : any;
 
         setUrl(url: string, callback?: Function): void;
-        reuseBrowser(harnessUrl?: string): void;
+        reuseBrowser(harnessUrl?: string, serverUrl?: string): void;
 
         waitFor(args: { condition: Function; exec?: Function; timeoutMS?: number; args?: any; timeoutError?: string; inBrowser?: boolean }, callback?: Function): void;
         waitFor(condition: Function, callback?: Function): void;
@@ -127,6 +127,7 @@ declare module "browser-harness" {
         first(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         has(arg: any, callback?: (err: Error, element: ElementProxy) => void) : boolean
         is(arg: any, callback?: (err: Error, element: ElementProxy) => void) : boolean
+        not(arg: any, callback?: (err: Error, element: ElementProxy) => void) :boolean
         last(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         next(selector?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         nextAll(selector?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy

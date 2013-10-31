@@ -29,16 +29,16 @@ everyone.now.getJqueryScriptText = function(callback){
 everyone.now.setup = function(){
     var driver = new Driver(this.now);
 
-    this.now.sendConsoleLog = function(text){
-        driver.events.emit('console.log', text);
+    this.now.sendConsoleLog = function(text, location){
+        driver.events.emit('console.log', text, location);
     };
 
-    this.now.sendConsoleWarn = function(text){
-        driver.events.emit('console.warn', text);
+    this.now.sendConsoleWarn = function(text, location){
+        driver.events.emit('console.warn', text, location);
     };
 
-    this.now.sendConsoleError = function(text){
-        driver.events.emit('console.error', text);
+    this.now.sendConsoleError = function(text, location){
+        driver.events.emit('console.error', text, location);
     };
 
     this.now.sendError = function(info){

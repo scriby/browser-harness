@@ -263,6 +263,10 @@ ElementProxy.prototype.last = function(callback){
     return this._exec({ func: 'last', args: arguments });
 };
 
+ElementProxy.prototype.not = function(callback){
+    return this._exec({ func: 'not', args: arguments });
+};
+
 ElementProxy.prototype.next = function(selector, callback){
     return this._exec({ func: 'next', args: arguments });
 };

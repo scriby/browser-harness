@@ -122,6 +122,26 @@
     
     patchElementToJson(window);
 
+    var getStackLocation = function(){
+        var err;
+        try {
+            throw new Error('getting stack info');
+        } catch(e){
+            err = e;
+        }
+
+        if(err.stack){
+            var split = err.stack.split('\n');
+            if(split[0].indexOf('Error:') === 0){
+                return split[3]; //Chrome
+            } else {
+                return split[2]; //Firefox
+            }
+        } else if(err.sourceURL){
+            return err.sourceURL + ': ' + err.line; //Safari
+        }
+    };
+
     var patchConsole = function(window){
         if(window && !window.__harness_consolePatched__){
             if(!window.console){
@@ -134,7 +154,7 @@
 
             window.console.log = function(text){
                 if(now.sendConsoleLog) {
-                    now.sendConsoleLog(text);
+                    now.sendConsoleLog(text, getStackLocation());
                 }
 
                 if(oldLog && oldLog.call){
@@ -144,7 +164,7 @@
 
             window.console.warn = function(text){
                 if(now.sendConsoleWarn){
-                    now.sendConsoleWarn(text);
+                    now.sendConsoleWarn(text, getStackLocation());
                 }
 
                 if(oldWarn && oldWarn.call){
@@ -154,7 +174,7 @@
 
             window.console.error = function(text){
                 if(now.sendConsoleError){
-                    now.sendConsoleError(text);
+                    now.sendConsoleError(text, getStackLocation());
                 }
 
                 if(oldError && oldError.call){

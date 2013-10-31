@@ -304,6 +304,12 @@ exports.setup = function(args){
             assert(input.length === 1);
         });
 
+        tu.it('not', function(){
+            var div = driver.findVisibles('div').not("#message-container");
+            assert(div);
+            assert(div.length === 4);
+        });
+
         tu.it('next', function(){
             var input = driver.findVisibles('input').first().next();
 
