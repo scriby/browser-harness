@@ -118,7 +118,7 @@ Browser.prototype._open = function(location, harnessUrl, args){
         }
     });
 
-    this.proc = child_process.spawn(location, browserArgs);
+    this.proc = child_process.spawn(location, browserArgs, { env: process.env });
 
     this.proc.stdout.on('data', function (data) {
         console.log('browser: ' + data);
