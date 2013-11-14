@@ -391,6 +391,14 @@ exports.setup = function(args){
             assert.equal(first.length, 1);
         });
 
+        tu.it('filter function', function(){
+            var funcTest = driver.findVisibles('input').filter(function(){
+                return $(this).is(':visible');
+            });
+            assert(funcTest);
+            assert(funcTest.length > 0);
+        });
+
         tu.it('append', function(){
             driver.findVisible('body').append('<div class="append-test"></div>');
 

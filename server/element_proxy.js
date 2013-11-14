@@ -10,10 +10,13 @@ var ElementProxy = function(driver){
 ElementProxy.prototype._exec = function(args, callback){
     var funcArgs = Array.prototype.slice.call(args.args, 0); //Convert from Arguments object to Array object
     var potentialCallback = funcArgs[funcArgs.length - 1];
-    if(typeof potentialCallback === 'function'){
-        callback = potentialCallback;
-        delete funcArgs[funcArgs.length - 1];
-        funcArgs.length--;
+
+    if(args.func !== 'filter' || funcArgs.length > 1){
+        if(typeof potentialCallback === 'function'){
+            callback = potentialCallback;
+            delete funcArgs[funcArgs.length - 1];
+            funcArgs.length--;
+        }
     }
 
     //Click has to be special cased. "Click"-ing an anchor using jQuery triggers the handlers, but does not follow the link
@@ -71,6 +74,12 @@ ElementProxy.prototype._exec = function(args, callback){
                         if(!jQuery.contains(document.documentElement, elements[i])){
                             throw new Error('Element does not exist in the DOM. ' + args.func + ' failed.');
                         }
+                    }
+                }
+
+                if(args.func === 'filter'){
+                    if(args.funcArgs[0].indexOf('function') >= 0){
+                        args.funcArgs[0] = eval('(' + args.funcArgs[0] + ')'); //Convert stringified function back to real function
                     }
                 }
 
@@ -331,6 +340,7 @@ ElementProxy.prototype.append = function(content, callback){
 
 
 ElementProxy.prototype.filter = function(selector, callback){
+    arguments[0] = arguments[0].toString();
     return this._exec({ func: 'filter', args: arguments });
 };
 

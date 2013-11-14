@@ -6,19 +6,23 @@ harness.events.on('ready', function(driver){
     _driver = driver;
 
     driver.events.on('console.log', function(text){
-        console.log('console.log: ' + text);
+        console.log('console.log: ');
+        console.log(text);
     });
 
     driver.events.on('console.warn', function(text){
-        console.log('console.warn: ' + text);
+        console.log('console.warn: ');
+        console.log(text);
     });
 
     driver.events.on('console.error', function(text){
-        console.log('console.error: ' + text);
+        console.log('console.error: ');
+        console.log(text);
     });
 
     driver.events.on('window.onerror', function(info){
-        console.log('window.onerror: ' + info);
+        console.log('window.onerror: ');
+        console.log(info);
     });
 });
 
