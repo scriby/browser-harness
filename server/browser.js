@@ -51,7 +51,7 @@ var _createFirefoxProfile = function(ffLocation, callback){
     });
 };
 
-var _chromeArgs = [ '*URL*', '--user-data-dir=/tmp/*RANDOM*', '-incognito', '--disable-prompt-on-repost', '--no-default-browser-check', '--no-first-run', '--disable-background-networking', '--disable-sync', '--disable-translate', '--disable-web-resources', '--safebrowsing-disable-auto-update', '--safebrowsing-disable-download-protection', '--disable-client-side-phishing-detection', '--disable-component-update', '--disable-default-apps', '--use-mock-keychain', '--ignore-certificate-errors', '-disable-popup-blocking'];
+var _chromeArgs = [ '*URL*', '--user-data-dir=/tmp/*RANDOM*', '-incognito', '--disable-prompt-on-repost', '--no-default-browser-check', '--no-first-run', '--disable-background-networking', '--disable-sync', '--disable-translate', '--disable-web-resources', '--safebrowsing-disable-auto-update', '--safebrowsing-disable-download-protection', '--disable-client-side-phishing-detection', '--disable-component-update', '--disable-default-apps', '--use-mock-keychain', '--ignore-certificate-errors', '--disable-popup-blocking', '--disable-webgl'];
 var _firefoxArgs = [ '-private', '-no-remote', '-silent', '-P', 'harness', '*URL*' ];
 
 var _defaultConfig = {
@@ -118,7 +118,7 @@ Browser.prototype._open = function(location, harnessUrl, args){
         }
     });
 
-    this.proc = child_process.spawn(location, browserArgs);
+    this.proc = child_process.spawn(location, browserArgs, { env: process.env });
 
     this.proc.stdout.on('data', function (data) {
         console.log('browser: ' + data);
