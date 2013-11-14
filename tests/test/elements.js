@@ -399,5 +399,11 @@ exports.setup = function(args){
             assert(appended);
             assert.equal(appended.length, 1);
         });
+
+        tu.it('find', function(){
+            var divs = driver.findVisible('body').find('div');
+            assert(divs);
+            assert(divs.length > 0);
+        });
     });
 };

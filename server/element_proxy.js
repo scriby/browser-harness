@@ -228,7 +228,7 @@ ElementProxy.prototype.contents = function(callback){
 };
 
 ElementProxy.prototype.find = ElementProxy.prototype.findElements = function(selector, callback){
-    return this.driver.find({ selector: selector, context: this }, callback);
+    return this._exec({ func: 'find', args: arguments });
 };
 
 ElementProxy.prototype.findElement = function(selector, callback){
@@ -465,7 +465,7 @@ ElementProxy.prototype.selectDropdownByIndex = function(index, callback) {
     }
 
     var dropdown = this;
-    return this.find('option:nth-child(' + (index + 1) + ')', function(err, result) {
+    return this.findElement('option:nth-child(' + (index + 1) + ')', function(err, result) {
         if (err) { return callback(err); }
 
         if(result.length === 0){
