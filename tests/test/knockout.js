@@ -105,7 +105,7 @@ exports.setup = function(args) {
             var result = flow.wait('select');
 
             assert(result instanceof Error);
-            assert.ok(result.message.indexOf('Element "option:nth-child(11)" not found (timeout: 10)') >= 0);
+            assert.ok(result.message.indexOf('Element "option:nth-child(11)" not found (timeout:') >= 0);
         });
 
         tu.it('selects a dropdown item by text that does not exist initially', function(){

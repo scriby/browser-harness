@@ -7,7 +7,7 @@ var testBrowser = require('./test_browser.js');
 var harness = require('browser-harness');
 
 //Lower timeout settings for tests so they go faster
-harness.config.timeoutMS = 10;
+harness.config.timeoutMS = 50;
 harness.config.retryMS = 3;
 
 describe('', function(){
