@@ -48,7 +48,7 @@ exports.setup = function(args){
             var result = flow.wait('waitFor');
 
             assert(result instanceof Error);
-            assert.equal('waitFor condition timed out (10): test error', result.message);
+            assert.equal('waitFor condition timed out (50): test error', result.message);
         });
 
         tu.it('passes variables to waitFor', function(){

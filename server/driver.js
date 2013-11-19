@@ -55,6 +55,12 @@ Driver.prototype.exec = function(args, callback){
         func = args;
     }
 
+    var cbOnce = _callOnce(callback);
+
+    var timeoutCheck = setTimeout(function(){
+        cbOnce(new Error('exec timed out (' + config.timeoutMS + ')'));
+    }, config.timeoutMS);
+
     this.now.exec(
         {
             func: func.toString(),
@@ -62,10 +68,11 @@ Driver.prototype.exec = function(args, callback){
             focusedWindow: this.focusedWindow
         },
 
-        function(err){
+        function(){
+            clearTimeout(timeoutCheck);
             self._convertArguments(arguments);
 
-            callback && callback.apply(err, arguments)
+            cbOnce && cbOnce.apply(null, arguments);
         }
     );
 };
@@ -125,7 +132,7 @@ Driver.prototype.waitFor = function(args, callback){
     }
 
     var _resultHandler = function(err, result){
-        if(err){
+        if(err && err.message.indexOf('exec timed out') < 0){
             return callback(err);
         }
 
@@ -148,7 +155,7 @@ Driver.prototype.waitFor = function(args, callback){
                 }, config.retryMS);
             } else {
                 if(!timeoutError) {
-                    return callback(new Error('waitFor condition timed out (' + timeout + '): ' + func.toString()));
+                    return callback(new Error('waitFor condition timed out (' + timeout + ')'));
                 } else {
                     return callback(new Error('waitFor condition timed out (' + timeout + '): ' + timeoutError));
                 }
@@ -402,6 +409,20 @@ Driver.prototype.isWindowOpen = function(windowProxy, callback){
     }
 
     return this.now.isWindowOpen(windowProxy, callback);
+};
+
+var _callOnce = function(callback){
+    if(callback == null){
+        return callback;
+    }
+
+    var called = false;
+    return function(){
+        if(!called){
+            called = true;
+            callback.apply(this, arguments);
+        }
+    };
 };
 
 module.exports = Driver;

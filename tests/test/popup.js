@@ -1,9 +1,15 @@
 var tu = require('../test_util.js');
 var assert = require('assert');
+var config = require('../../server/config.js');
 
 exports.setup = function(args){
     describe('When viewing popup.html', function(){
-        var driver;
+        var driver, _originalTimeout;
+
+        before(function(){
+            _originalTimeout = config.timeoutMS;
+            config.timeoutMS = 1000;
+        });
 
         tu.it('loads the URL', function(){
             driver = args.driver;
@@ -22,7 +28,7 @@ exports.setup = function(args){
             assert.ok(!popupButton.hasClass('open-popup'));
 
             var popupDriver = popup.getDriver();
-            popupDriver.findVisible({ selector: 'button.open-popup', timeoutMS: 1000 });
+            popupDriver.findVisible('button.open-popup');
 
             driver.clearLastPopupWindow();
             assert.ok(!driver.getLastPopupWindow());
@@ -30,11 +36,8 @@ exports.setup = function(args){
             assert.ok(popup.isOpen());
             popupDriver.findVisible('button.close-self').click();
 
-            driver.waitFor({
-                condition: function(){
-                    return !popup.isOpen();
-                },
-                timeoutMS: 500
+            driver.waitFor(function(){
+                return !popup.isOpen();
             });
         });
 
@@ -42,6 +45,10 @@ exports.setup = function(args){
             popupButton = driver.findVisible('button.open-popup-2').click();
             popup = driver.getLastPopupWindow();
             assert.ok(popup != null);
+        });
+
+        after(function(){
+            config.timeoutMS = _originalTimeout;
         });
     });
 };
