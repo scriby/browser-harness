@@ -1,6 +1,6 @@
 {
   "name": "browser-harness",
-  "version": "0.0.43",
+  "version": "0.0.44",
   "repository": "https://github.com/scriby/browser-harness.git",
   "main": "server/harness.js",
   "dependencies": {
