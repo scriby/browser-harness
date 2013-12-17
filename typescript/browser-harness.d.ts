@@ -6,9 +6,9 @@
 /// <reference path="../node/node.d.ts" />
 
 declare module "browser-harness" {
-    import events = require("events");
+    import nodeEvents = require("events");
 
-    interface HarnessEvents extends events.NodeEventEmitter {
+    interface HarnessEvents extends nodeEvents.NodeEventEmitter {
         once(event: string, listener: (driver: Driver) => void): void;
         once(event: 'ready', listener: (driver: Driver) => void): void;
 
@@ -16,7 +16,7 @@ declare module "browser-harness" {
         on(event: 'ready', listener: (driver: Driver) => void): void;
     }
 
-    interface DriverEvents extends events.NodeEventEmitter {
+    interface DriverEvents extends nodeEvents.NodeEventEmitter {
         once(event: string, listener: (text: string) => void): void;
         once(event: 'console.log', listener: (text: string, location?: string) => void): void;
         once(event: 'console.warn', listener: (text: string, location?: string) => void): void;
@@ -127,7 +127,7 @@ declare module "browser-harness" {
         first(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         has(arg: any, callback?: (err: Error, element: ElementProxy) => void) : boolean
         is(arg: any, callback?: (err: Error, element: ElementProxy) => void) : boolean
-        not(arg: any, callback?: (err: Error, element: ElementProxy) => void) :boolean
+        not(arg: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         last(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         next(selector?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         nextAll(selector?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
