@@ -574,4 +574,28 @@ ElementProxy.prototype.waitUntil = function(selector, callback){
     });
 };
 
+ElementProxy.prototype.forEach = function(){
+    return Array.prototype.forEach.apply(this, arguments);
+};
+
+ElementProxy.prototype.map = function(){
+    return Array.prototype.map.apply(this, arguments);
+};
+
+ElementProxy.prototype.reduce = function(){
+    return Array.prototype.reduce.apply(this, arguments);
+};
+
+ElementProxy.prototype.reduceRight = function(){
+    return Array.prototype.reduceRight.apply(this, arguments);
+};
+
+ElementProxy.prototype.every = function(){
+    return Array.prototype.every.apply(this, arguments);
+};
+
+ElementProxy.prototype.some = function(){
+    return Array.prototype.some.apply(this, arguments);
+};
+
 module.exports = ElementProxy;
