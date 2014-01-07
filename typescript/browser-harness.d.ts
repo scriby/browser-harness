@@ -159,12 +159,12 @@ declare module "browser-harness" {
 
         waitUntil(selector: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
 
-        every(callbackfn: (value: string, index: number, array: string[]) => boolean, thisArg?: any): boolean;
-        some(callbackfn: (value: string, index: number, array: string[]) => boolean, thisArg?: any): boolean;
-        forEach(callbackfn: (value: string, index: number, array: string[]) => void, thisArg?: any): void;
-        map(callbackfn: (value: string, index: number, array: string[]) => any, thisArg?: any): any[];
-        reduce(callbackfn: (previousValue: any, currentValue: any, currentIndex: number, array: string[]) => any, initialValue?: any): any;
-        reduceRight(callbackfn: (previousValue: any, currentValue: any, currentIndex: number, array: string[]) => any, initialValue?: any): any;
+        every(callbackfn: (value: ElementProxy, index: number, array: ElementProxy) => boolean, thisArg?: any): boolean;
+        some(callbackfn: (value: ElementProxy, index: number, array: ElementProxy) => boolean, thisArg?: any): boolean;
+        forEach(callbackfn: (value: ElementProxy, index: number, array: ElementProxy) => void, thisArg?: any): void;
+        map(callbackfn: (value: ElementProxy, index: number, array: ElementProxy) => any, thisArg?: any): any[];
+        reduce(callbackfn: (previousValue: any, currentValue: ElementProxy, currentIndex: number, array: ElementProxy) => any, initialValue?: any): any;
+        reduceRight(callbackfn: (previousValue: any, currentValue: ElementProxy, currentIndex: number, array: ElementProxy) => any, initialValue?: any): any;
     }
 
     export interface WindowProxy {

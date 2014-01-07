@@ -413,5 +413,19 @@ exports.setup = function(args){
             assert(divs);
             assert(divs.length > 0);
         });
+
+        tu.it('map', function() {
+            var divs = driver.findVisible('body').find('div');
+            var mapped = divs.map(function(div){
+                return div.html();
+            });
+
+            assert.ok(divs.length > 0);
+            assert.equal(divs.length, mapped.length);
+
+            mapped.forEach(function(contents){
+                assert.equal(typeof contents, 'string');
+            });
+        });
     });
 };

@@ -574,28 +574,39 @@ ElementProxy.prototype.waitUntil = function(selector, callback){
     });
 };
 
+ElementProxy.prototype._getAsArrayOfElementProxies = function(){
+    var self = this;
+    return Array.prototype.map.call(this, function(element){
+        var proxy = [ element ];
+        proxy.__proto__ = ElementProxy.prototype;
+        proxy.driver = self.driver;
+
+        return proxy;
+    });
+};
+
 ElementProxy.prototype.forEach = function(){
-    return Array.prototype.forEach.apply(this, arguments);
+    return Array.prototype.forEach.apply(this._getAsArrayOfElementProxies(), arguments);
 };
 
 ElementProxy.prototype.map = function(){
-    return Array.prototype.map.apply(this, arguments);
+    return Array.prototype.map.apply(this._getAsArrayOfElementProxies(), arguments);
 };
 
 ElementProxy.prototype.reduce = function(){
-    return Array.prototype.reduce.apply(this, arguments);
+    return Array.prototype.reduce.apply(this._getAsArrayOfElementProxies(), arguments);
 };
 
 ElementProxy.prototype.reduceRight = function(){
-    return Array.prototype.reduceRight.apply(this, arguments);
+    return Array.prototype.reduceRight.apply(this._getAsArrayOfElementProxies(), arguments);
 };
 
 ElementProxy.prototype.every = function(){
-    return Array.prototype.every.apply(this, arguments);
+    return Array.prototype.every.apply(this._getAsArrayOfElementProxies(), arguments);
 };
 
 ElementProxy.prototype.some = function(){
-    return Array.prototype.some.apply(this, arguments);
+    return Array.prototype.some.apply(this._getAsArrayOfElementProxies(), arguments);
 };
 
 module.exports = ElementProxy;
