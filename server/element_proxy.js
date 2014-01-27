@@ -338,6 +338,13 @@ ElementProxy.prototype.append = function(content, callback){
     return this._exec({ func: 'append', args: arguments });
 };
 
+ElementProxy.prototype.appendTo = function(to, callback){
+    return this._exec({ func: 'appendTo', args: arguments });
+};
+
+ElementProxy.prototype.remove = function(callback){
+    return this._exec({ func: 'remove', args: arguments });
+};
 
 ElementProxy.prototype.filter = function(selector, callback){
     arguments[0] = arguments[0].toString();
