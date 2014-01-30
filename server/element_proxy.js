@@ -112,6 +112,10 @@ ElementProxy.prototype.blur = function(callback){
     return this._exec({ func: 'blur', args: arguments });
 };
 
+ElementProxy.prototype.keyup = function(callback){
+    return this._exec({ func: 'keyup', args: arguments });
+};
+
 ElementProxy.prototype.val = function(value, callback){
     return this._exec({ func: 'val', args: arguments });
 };
@@ -527,12 +531,16 @@ ElementProxy.prototype.setText = function(text, callback) {
             return result[setter](text, function(err, result) {
                 if (err) { return callback(err); }
 
-                // blur the element to trigger any events that may happen when text is entered
-                return result.blur(function(err, result) {
+                // keyup and then blur the element to trigger any events that may happen when text is entered
+                return result.keyup(function(err, result) {
                     if (err) { return callback(err); }
 
-                    // manually fire the change event (needed for knockout support)
-                    return result.change(callback);
+                    return result.blur(function(err, result) {
+                        if (err) {return callback(err); }
+
+                        // manually fire the change event (needed for knockout support)
+                        return result.change(callback);
+                    });
                 });
             });
         });
