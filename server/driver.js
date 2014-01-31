@@ -132,7 +132,7 @@ Driver.prototype.waitFor = function(args, callback){
     }
 
     var _resultHandler = function(err, result){
-        if(err && err.message.indexOf('exec timed out') < 0){
+        if(err && (!err.message || err.message.indexOf('exec timed out') < 0)){
             return callback(err);
         }
 

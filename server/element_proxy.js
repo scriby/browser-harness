@@ -68,7 +68,7 @@ ElementProxy.prototype._exec = function(args, callback){
                 //An exception is made for filterVisible because it is used when selecting elements
                 //It's possible that we select an element, then check its visibility, and it's gone from the DOM at that point
                 //Instead of erroring, we want to continue to try to select the element
-                if(args.func !== '_filterVisible'){
+                if(args.func !== '_filterVisible' && args.func !== 'appendTo'){
                     //Make sure the element is still in the DOM
                     for(var i = 0; i < elements.length; i++){
                         if(!jQuery.contains(document.documentElement, elements[i])){
@@ -110,6 +110,10 @@ ElementProxy.prototype.focus = function(callback){
 
 ElementProxy.prototype.blur = function(callback){
     return this._exec({ func: 'blur', args: arguments });
+};
+
+ElementProxy.prototype.keyup = function(callback){
+    return this._exec({ func: 'keyup', args: arguments });
 };
 
 ElementProxy.prototype.val = function(value, callback){
@@ -338,6 +342,13 @@ ElementProxy.prototype.append = function(content, callback){
     return this._exec({ func: 'append', args: arguments });
 };
 
+ElementProxy.prototype.appendTo = function(to, callback){
+    return this._exec({ func: 'appendTo', args: arguments });
+};
+
+ElementProxy.prototype.remove = function(callback){
+    return this._exec({ func: 'remove', args: arguments });
+};
 
 ElementProxy.prototype.filter = function(selector, callback){
     arguments[0] = arguments[0].toString();
@@ -520,12 +531,16 @@ ElementProxy.prototype.setText = function(text, callback) {
             return result[setter](text, function(err, result) {
                 if (err) { return callback(err); }
 
-                // blur the element to trigger any events that may happen when text is entered
-                return result.blur(function(err, result) {
+                // keyup and then blur the element to trigger any events that may happen when text is entered
+                return result.keyup(function(err, result) {
                     if (err) { return callback(err); }
 
-                    // manually fire the change event (needed for knockout support)
-                    return result.change(callback);
+                    return result.blur(function(err, result) {
+                        if (err) {return callback(err); }
+
+                        // manually fire the change event (needed for knockout support)
+                        return result.change(callback);
+                    });
                 });
             });
         });
@@ -572,6 +587,41 @@ ElementProxy.prototype.waitUntil = function(selector, callback){
     }, function(err){
         callback(err, self);
     });
+};
+
+ElementProxy.prototype._getAsArrayOfElementProxies = function(){
+    var self = this;
+    return Array.prototype.map.call(this, function(element){
+        var proxy = [ element ];
+        proxy.__proto__ = ElementProxy.prototype;
+        proxy.driver = self.driver;
+
+        return proxy;
+    });
+};
+
+ElementProxy.prototype.forEach = function(){
+    return Array.prototype.forEach.apply(this._getAsArrayOfElementProxies(), arguments);
+};
+
+ElementProxy.prototype.map = function(){
+    return Array.prototype.map.apply(this._getAsArrayOfElementProxies(), arguments);
+};
+
+ElementProxy.prototype.reduce = function(){
+    return Array.prototype.reduce.apply(this._getAsArrayOfElementProxies(), arguments);
+};
+
+ElementProxy.prototype.reduceRight = function(){
+    return Array.prototype.reduceRight.apply(this._getAsArrayOfElementProxies(), arguments);
+};
+
+ElementProxy.prototype.every = function(){
+    return Array.prototype.every.apply(this._getAsArrayOfElementProxies(), arguments);
+};
+
+ElementProxy.prototype.some = function(){
+    return Array.prototype.some.apply(this._getAsArrayOfElementProxies(), arguments);
 };
 
 module.exports = ElementProxy;

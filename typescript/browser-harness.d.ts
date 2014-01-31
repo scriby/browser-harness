@@ -6,9 +6,9 @@
 /// <reference path="../node/node.d.ts" />
 
 declare module "browser-harness" {
-    import events = require("events");
+    import nodeEvents = require("events");
 
-    interface HarnessEvents extends events.NodeEventEmitter {
+    interface HarnessEvents extends nodeEvents.NodeEventEmitter {
         once(event: string, listener: (driver: Driver) => void): void;
         once(event: 'ready', listener: (driver: Driver) => void): void;
 
@@ -16,7 +16,7 @@ declare module "browser-harness" {
         on(event: 'ready', listener: (driver: Driver) => void): void;
     }
 
-    interface DriverEvents extends events.NodeEventEmitter {
+    interface DriverEvents extends nodeEvents.NodeEventEmitter {
         once(event: string, listener: (text: string) => void): void;
         once(event: 'console.log', listener: (text: string, location?: string) => void): void;
         once(event: 'console.warn', listener: (text: string, location?: string) => void): void;
@@ -127,7 +127,7 @@ declare module "browser-harness" {
         first(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         has(arg: any, callback?: (err: Error, element: ElementProxy) => void) : boolean
         is(arg: any, callback?: (err: Error, element: ElementProxy) => void) : boolean
-        not(arg: any, callback?: (err: Error, element: ElementProxy) => void) :boolean
+        not(arg: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         last(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         next(selector?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         nextAll(selector?: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
@@ -149,6 +149,9 @@ declare module "browser-harness" {
         filter(selector: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
 
         append(content: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+        appendTo(to: any, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+
+        remove(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
 
         selectDropdownByText(text: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
         selectDropdownByValue(value: string, callback?: (err: Error, eleemnt: ElementProxy) => void) : ElementProxy
@@ -158,6 +161,13 @@ declare module "browser-harness" {
         sendEnterKey(callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
 
         waitUntil(selector: string, callback?: (err: Error, element: ElementProxy) => void) : ElementProxy
+
+        every(callbackfn: (value: ElementProxy, index: number, array: ElementProxy) => boolean, thisArg?: any): boolean;
+        some(callbackfn: (value: ElementProxy, index: number, array: ElementProxy) => boolean, thisArg?: any): boolean;
+        forEach(callbackfn: (value: ElementProxy, index: number, array: ElementProxy) => void, thisArg?: any): void;
+        map(callbackfn: (value: ElementProxy, index: number, array: ElementProxy) => any, thisArg?: any): any[];
+        reduce(callbackfn: (previousValue: any, currentValue: ElementProxy, currentIndex: number, array: ElementProxy) => any, initialValue?: any): any;
+        reduceRight(callbackfn: (previousValue: any, currentValue: ElementProxy, currentIndex: number, array: ElementProxy) => any, initialValue?: any): any;
     }
 
     export interface WindowProxy {
