@@ -251,7 +251,7 @@ Driver.prototype.findElement = function(args, callback){
     });
 };
 
-Driver.prototype.findElements = Driver.prototype.find = function(args, callback){
+Driver.prototype.findElements = function(args, callback){
     if(typeof args === 'object'){
         args.multi = true;
     } else {
@@ -342,7 +342,7 @@ Driver.prototype.findVisibles = function(args, callback){
     return this.findVisible(args, callback);
 };
 
-Driver.prototype.$ = function(selector, context, callback){
+Driver.prototype.$ = Driver.prototype.find = function(selector, context, callback){
     if (callback == null && typeof context === 'function') {
         callback = context;
         context = null;
