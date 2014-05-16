@@ -21,6 +21,10 @@ exports.listen = function(port, callback){
     server.listen(port || 4500, callback);
 };
 
+exports.close = function(callback){
+    server.close(callback);
+};
+
 var _jqCache = fs.readFileSync(__dirname + '/../client/vendor/jquery.js', 'utf8');
 everyone.now.getJqueryScriptText = function(callback){
     return callback(null, _jqCache);
