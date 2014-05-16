@@ -7,27 +7,27 @@
 
 declare module "browser-harness" {
     import nodeEvents = require("events");
+  
+    interface HarnessEvents extends nodeEvents.EventEmitter {
+        once(event: string, listener: (driver: Driver) => void): nodeEvents.EventEmitter;
+        once(event: 'ready', listener: (driver: Driver) => void): nodeEvents.EventEmitter;
 
-    interface HarnessEvents extends nodeEvents.NodeEventEmitter {
-        once(event: string, listener: (driver: Driver) => void): void;
-        once(event: 'ready', listener: (driver: Driver) => void): void;
-
-        on(event: string, listener: (driver: Driver) => void): void;
-        on(event: 'ready', listener: (driver: Driver) => void): void;
+        on(event: string, listener: (driver: Driver) => void): nodeEvents.EventEmitter;
+        on(event: 'ready', listener: (driver: Driver) => void): nodeEvents.EventEmitter;
     }
 
-    interface DriverEvents extends nodeEvents.NodeEventEmitter {
-        once(event: string, listener: (text: string) => void): void;
-        once(event: 'console.log', listener: (text: string, location?: string) => void): void;
-        once(event: 'console.warn', listener: (text: string, location?: string) => void): void;
-        once(event: 'console.error', listener: (text: string, location?: string) => void): void;
-        once(event: 'window.onerror', listener: (text: string) => void): void;
+    interface DriverEvents extends nodeEvents.EventEmitter {
+        once(event: string, listener: (text: string) => void): nodeEvents.EventEmitter;
+        once(event: 'console.log', listener: (text: string, location?: string) => void): nodeEvents.EventEmitter;
+        once(event: 'console.warn', listener: (text: string, location?: string) => void): nodeEvents.EventEmitter;
+        once(event: 'console.error', listener: (text: string, location?: string) => void): nodeEvents.EventEmitter;
+        once(event: 'window.onerror', listener: (text: string) => void): nodeEvents.EventEmitter;
 
-        on(event: string, listener: (text: string) => void): void;
-        on(event: 'console.log', listener: (text: string, location?: string) => void): void;
-        on(event: 'console.warn', listener: (text: string, location?: string) => void): void;
-        on(event: 'console.error', listener: (text: string, location?: string) => void): void;
-        on(event: 'window.onerror', listener: (text: string) => void): void;
+        on(event: string, listener: (text: string) => void): nodeEvents.EventEmitter;
+        on(event: 'console.log', listener: (text: string, location?: string) => void): nodeEvents.EventEmitter;
+        on(event: 'console.warn', listener: (text: string, location?: string) => void): nodeEvents.EventEmitter;
+        on(event: 'console.error', listener: (text: string, location?: string) => void): nodeEvents.EventEmitter;
+        on(event: 'window.onerror', listener: (text: string) => void): nodeEvents.EventEmitter;
     }
 
     export interface Driver {
@@ -184,6 +184,7 @@ declare module "browser-harness" {
     }
 
     export function listen(port: number, callback?: Function): void;
+    export function close(callback?: Function): void;
     export var events: HarnessEvents;
     export var config: {
         timeoutMS: number;
