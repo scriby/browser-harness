@@ -342,6 +342,8 @@
         args.focusedWindow = WindowManager.deserialize(args.focusedWindow) || testFrame.contentWindow;
 
         if(args.focusedWindow.$ == null){
+            var originalDefine = args.focusedWindow.define;
+
             try{
                 //This is a workaround for IE8 where eval is not available in the iframe until calling execScript
                 //http://stackoverflow.com/questions/2720444/why-does-this-window-object-not-have-the-eval-function
@@ -352,10 +354,8 @@
                 //We blank out the define variable when loading jQuery to prevent it from registering itself as
                 //an AMD module. This can interfere with modules that load jQuery via AMD, as they will
                 //receive this reference to the file, even though the app may have loaded its own reference later.
-                var originalDefine = args.focusedWindow.define;
                 args.focusedWindow.define = null;
                 args.focusedWindow.eval(_jQueryScriptText);
-                args.focusedWindow.define = originalDefine;
             } catch(e){
                 //This is a workaround for Firefox. It was having problems with evaluating the jQuery script when the
                 //frame was transitioning between pages. I couldn't figure out a way to detect whether this would error
@@ -365,6 +365,8 @@
                 }, 100);
 
                 return;
+            } finally {
+                args.focusedWindow.define = originalDefine;
             }
         }
 
