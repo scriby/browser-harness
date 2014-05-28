@@ -4,7 +4,7 @@
   "repository": "https://github.com/scriby/browser-harness.git",
   "main": "server/harness.js",
   "dependencies": {
-    "now": "0.8.1",
+    "now": "git://github.com/scriby/now.git#575c08e4b626fe8f8eb90d774d6171cbcaefd955",
     "express": "3.3.4"
   }
 }
